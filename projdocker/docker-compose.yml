@@ -1,0 +1,36 @@
+
+services:
+  backend:
+    build: .
+    container_name: movie_theater_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/movie_theater_db
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    networks:
+      - movie_theater_network
+  db:
+    image: postgres:13
+    container_name: movie_theater_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: movie_theater_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - movie_theater_network
+
+networks:
+  movie_theater_network:
+    driver: bridge
+
+volumes:
+  pgdata:
+    driver: local
+    
+    
