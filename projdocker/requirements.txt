@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-sqlalchemy
-pydantic
-python-dateutil
-requests
-streamlit
-psycopg2-binary
