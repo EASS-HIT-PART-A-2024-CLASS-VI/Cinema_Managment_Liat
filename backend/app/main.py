@@ -1,5 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
+from pydantic import BaseModel
+import bcrypt
 import crud, models, schemas, database
 
 models.Base.metadata.create_all(bind=database.engine)
@@ -17,7 +20,36 @@ def get_db():
 def read_root():
     return {"message": "Welcome to the Cinema Management System!"}
 
+# Login endpoint
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+@app.post("/login")
+def login(request: LoginRequest, db: Session = Depends(get_db)):
+    # Fetch the user credentials from the permissions table
+    result = db.execute(
+        text("SELECT password FROM permissions WHERE username = :username"),
+        {"username": request.username}
+    ).fetchone()
+
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    # Extract hashed password from result
+    hashed_password = result[0]
+
+    # Verify password
+    if not bcrypt.checkpw(request.password.encode("utf-8"), hashed_password.encode("utf-8")):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    return {"message": f"Successfully logged in as {request.username}"}
+
 # Movies endpoints
+@app.get("/movies/dropdown", response_model=list[str])
+def get_movie_titles(db: Session = Depends(get_db)):
+    return [movie.title for movie in crud.get_movies(db)]
+
 @app.get("/movies", response_model=list[schemas.Movie])
 def read_movies(db: Session = Depends(get_db)):
     return crud.get_movies(db)
@@ -28,10 +60,6 @@ def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
-
-@app.get("/movies/dropdown", response_model=list[str])
-def get_movie_titles(db: Session = Depends(get_db)):
-    return [movie.title for movie in crud.get_movies(db)]
 
 @app.post("/movies", response_model=schemas.Movie)
 def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
@@ -55,7 +83,24 @@ def get_employee_by_id(employee_id: str, db: Session = Depends(get_db)):
 
 @app.post("/employees", response_model=schemas.Employee)
 def add_employee(employee: schemas.EmployeeCreate, db: Session = Depends(get_db)):
-    return crud.create_employee(db, employee)
+    # Add the employee to the employees table
+    new_employee = crud.create_employee(db, employee)
+
+    # If the role is Manager, add their credentials to the permissions table
+    if employee.role.lower() == "manager":
+        existing_permission = db.query(models.Permission).filter(
+            models.Permission.username == employee.first_name
+        ).first()
+        if not existing_permission:
+            hashed_password = bcrypt.hashpw("Aa123456".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+            db_permission = models.Permission(
+                username=employee.first_name,
+                password=hashed_password
+            )
+            db.add(db_permission)
+            db.commit()
+
+    return new_employee
 
 # Branches endpoints
 @app.get("/branches", response_model=list[schemas.Branch])

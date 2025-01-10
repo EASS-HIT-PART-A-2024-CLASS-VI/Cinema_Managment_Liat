@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   backend:
     build:
@@ -12,6 +11,8 @@ services:
       - ./backend/app:/app
     depends_on:
       - db
+    networks:
+      - app_default
 
   frontend:
     build:
@@ -21,6 +22,8 @@ services:
       - "8501:8501"
     depends_on:
       - backend
+    networks:
+      - app_default
 
   db:
     image: postgres
@@ -34,7 +37,13 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_default
 
 volumes:
   postgres_data:
+
+networks:
+  app_default:
+    driver: bridge
 

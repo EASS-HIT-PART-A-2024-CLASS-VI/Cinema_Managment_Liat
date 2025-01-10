@@ -37,3 +37,8 @@ class Branch(Base):
     opening_year = Column(Date, nullable=False)
     customer_service_phone = Column(String, nullable=False)
 
+class Permission(Base):
+    __tablename__ = "permissions"
+    username = Column(String, primary_key=True, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+
