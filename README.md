@@ -7,11 +7,7 @@ The backend, powered by **FastAPI**, ensures robust and secure API services. The
 - **Backend**: Python 3.8, FastAPI (running on WSL).
 - **Frontend**: Streamlit (running on WSL).
 - **Database**: PostgreSQL.
-- **Containerization**: Docker and Docker Compose.
-- Backend: Python 3.8, FastAPI (running on WSL).
-- Frontend: Streamlit (running on WSL).
-- Database: PostgreSQL.
-- Containerization: Docker.
+- **Containerization**: Docker.
 ## Project Features
 ### Backend
 - **CRUD Operations**:
