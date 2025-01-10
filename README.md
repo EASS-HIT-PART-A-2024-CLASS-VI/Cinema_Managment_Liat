@@ -1,31 +1,17 @@
-<<<<<<< HEAD
 # Welcome To Cinema Management System!
-
-=======
-Welcome To Cinema Management System!
->>>>>>> 55d611afdf469a7a46937d044689af5b4c530353
 ## Overview
 The **Cinema Management System** is a comprehensive solution for managing and controlling data related to cinemas. Designed with scalability and user-friendliness in mind, this application allows administrators to efficiently manage movies, employees, and branches.
 
 The backend, powered by **FastAPI**, ensures robust and secure API services. The frontend, built with **Streamlit**, provides a clean and intuitive user interface for interacting with the system. Data is stored in a **PostgreSQL database**, and the project is containerized using **Docker**, ensuring seamless deployment and compatibility across environments.
-
----
-
 ## Technologies Used
-<<<<<<< HEAD
 - **Backend**: Python 3.8, FastAPI (running on WSL).
 - **Frontend**: Streamlit (running on WSL).
 - **Database**: PostgreSQL.
 - **Containerization**: Docker and Docker Compose.
-
----
-=======
 - Backend: Python 3.8, FastAPI (running on WSL).
 - Frontend: Streamlit (running on WSL).
 - Database: PostgreSQL.
 - Containerization: Docker.
->>>>>>> 55d611afdf469a7a46937d044689af5b4c530353
-
 ## Project Features
 ### Backend
 - **CRUD Operations**:
@@ -39,14 +25,9 @@ The backend, powered by **FastAPI**, ensures robust and secure API services. The
   - Adding movies, employees, and branches.
   - Login for managers to access controlled functionalities.
 
-<<<<<<< HEAD
----
-
 ## Project Structure and Endpoints
 ```plaintext
-=======
 ## Project Structure
->>>>>>> 55d611afdf469a7a46937d044689af5b4c530353
 app/
 ├── backend/
 │   ├── Dockerfile
@@ -67,7 +48,3 @@ app/
 └── frontend/
     ├── Dockerfile
     └── frontend.py         # Streamlit frontend
-<<<<<<< HEAD
-
-=======
->>>>>>> 55d611afdf469a7a46937d044689af5b4c530353
