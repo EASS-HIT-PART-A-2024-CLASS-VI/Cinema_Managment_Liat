@@ -1,34 +1,36 @@
-Welcome To Cinema Management System!
+# Welcome To Cinema Management System!
 
 ## Overview
-The Cinema Management System is a comprehensive solution for managing and controlling data related to cinemas.
-Designed with scalability and user-friendliness in mind, this application allows administrators to
-efficiently manage movies, employees, and branches.
-The backend, powered by FastAPI, ensures robust and secure API services. The frontend, built with Streamlit, 
-provides a clean and intuitive user interface for interacting with the system. 
-Data is stored in a PostgreSQL database, and the project is containerized using Docker,
-ensuring seamless deployment and compatibility across environments.
+The **Cinema Management System** is a comprehensive solution for managing and controlling data related to cinemas. Designed with scalability and user-friendliness in mind, this application allows administrators to efficiently manage movies, employees, and branches.
+
+The backend, powered by **FastAPI**, ensures robust and secure API services. The frontend, built with **Streamlit**, provides a clean and intuitive user interface for interacting with the system. Data is stored in a **PostgreSQL database**, and the project is containerized using **Docker**, ensuring seamless deployment and compatibility across environments.
+
+---
 
 ## Technologies Used
-- Backend: Python 3.8, FastAPI (running on WSL).
-- Frontend: Streamlit (running on WSL).
-- Database: PostgreSQL.
-- Containerization: Docker and Docker Compose.
+- **Backend**: Python 3.8, FastAPI (running on WSL).
+- **Frontend**: Streamlit (running on WSL).
+- **Database**: PostgreSQL.
+- **Containerization**: Docker and Docker Compose.
+
+---
 
 ## Project Features
 ### Backend
-- CRUD Operations:
+- **CRUD Operations**:
   - Manage movies, employees, and branches.
-- Login Functionality:
+- **Login Functionality**:
   - Managers can log in using their name as a username.
 
 ### Frontend
 - User-friendly interface built with Streamlit for:
-  - Viewing and managing movies, employees, and branches
-  - Adding movies, employees and branches.
+  - Viewing and managing movies, employees, and branches.
+  - Adding movies, employees, and branches.
   - Login for managers to access controlled functionalities.
 
-## Project Structure
+---
+
+## Project Structure and Endpoints
 ```plaintext
 app/
 ├── backend/
@@ -50,5 +52,4 @@ app/
 └── frontend/
     ├── Dockerfile
     └── frontend.py         # Streamlit frontend
-
 
