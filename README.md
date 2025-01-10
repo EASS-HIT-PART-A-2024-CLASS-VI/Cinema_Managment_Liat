@@ -1,5 +1,4 @@
 Welcome To Cinema Management System!
-
 ## Overview
 The Cinema Management System is a comprehensive solution for managing and controlling data related to cinemas.
 Designed with scalability and user-friendliness in mind, this application allows administrators to
@@ -13,7 +12,7 @@ ensuring seamless deployment and compatibility across environments.
 - Backend: Python 3.8, FastAPI (running on WSL).
 - Frontend: Streamlit (running on WSL).
 - Database: PostgreSQL.
-- Containerization: Docker and Docker Compose.
+- Containerization: Docker.
 
 ## Project Features
 ### Backend
@@ -29,7 +28,6 @@ ensuring seamless deployment and compatibility across environments.
   - Login for managers to access controlled functionalities.
 
 ## Project Structure
-```plaintext
 app/
 ├── backend/
 │   ├── Dockerfile
@@ -50,5 +48,3 @@ app/
 └── frontend/
     ├── Dockerfile
     └── frontend.py         # Streamlit frontend
-
-
