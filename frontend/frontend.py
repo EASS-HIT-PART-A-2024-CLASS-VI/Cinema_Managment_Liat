@@ -1,9 +1,28 @@
 import streamlit as st
 import requests
 import datetime
+import base64
 
 # API base URL
 BASE_URL = "http://backend:8000"
+
+# Function to set a background image
+def set_login_background(image_path):
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded_string}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Initialize session state for login
 if "authenticated" not in st.session_state:
@@ -14,6 +33,13 @@ if "username" not in st.session_state:
 
 # Login Page
 def login_page():
+    # Use the absolute path for the background image
+    background_image_path = "/app/background.png"
+    try:
+        set_login_background(background_image_path)
+    except FileNotFoundError:
+        st.error("Background image not found. Please check the file path and ensure the file exists.")
+
     st.title("Cinema Management System - Login")
     st.subheader("Please log in to access the system")
 
@@ -224,4 +250,3 @@ if not st.session_state.authenticated:
     login_page()
 else:
     main_app()
-
