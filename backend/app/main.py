@@ -71,8 +71,8 @@ def read_employees(db: Session = Depends(get_db)):
     return crud.get_employees(db)
 
 @app.get("/employees/dropdown", response_model=list[str])
-def get_employee_ids(db: Session = Depends(get_db)):
-    return [employee.personal_id for employee in crud.get_employees(db)]
+def get_employee_names(db: Session = Depends(get_db)):
+    return [employee.first_name + " " + employee.last_name for employee in crud.get_employees(db)]
 
 @app.get("/employees/{employee_id}", response_model=schemas.Employee)
 def get_employee_by_id(employee_id: str, db: Session = Depends(get_db)):
