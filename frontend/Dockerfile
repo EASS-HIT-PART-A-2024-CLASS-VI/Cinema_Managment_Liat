@@ -10,6 +10,7 @@ RUN pip install --timeout=1000 streamlit requests
 # Copy application files
 COPY ./frontend.py /app/frontend.py
 COPY ./background.png /app/background.png
+COPY ./moviesback.png /app/moviesback.png
 
 # Expose the port Streamlit will use
 EXPOSE 8501

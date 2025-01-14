@@ -1,9 +1,12 @@
-from sqlalchemy.orm import Session  
+from sqlalchemy.orm import Session
 import models, schemas
 import bcrypt
 
 def get_movies(db: Session):
     return db.query(models.Movie).all()
+
+def get_movie_by_name(db: Session, movie_name: str):
+    return db.query(models.Movie).filter(models.Movie.title == movie_name).all()
 
 def create_movie(db: Session, movie: schemas.MovieCreate):
     db_movie = models.Movie(**movie.dict())
@@ -12,17 +15,26 @@ def create_movie(db: Session, movie: schemas.MovieCreate):
     db.refresh(db_movie)
     return db_movie
 
+def delete_movie_by_id(db: Session, movie_id: int):
+    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+    if not movie:
+        return {"error": "Movie not found"}
+    db.delete(movie)
+    db.commit()
+    return {"message": "Movie deleted successfully"}
+
 def get_employees(db: Session):
     return db.query(models.Employee).all()
 
+def get_employee_by_name(db: Session, employee_name: str):
+    return db.query(models.Employee).filter(models.Employee.first_name + " " + models.Employee.last_name == employee_name).all()
+
 def create_employee(db: Session, employee: schemas.EmployeeCreate):
-    # Create the employee
     db_employee = models.Employee(**employee.dict())
     db.add(db_employee)
     db.commit()
     db.refresh(db_employee)
 
-    # If the role is 'Manager', add to permissions
     if db_employee.role.lower() == "manager":
         hashed_password = bcrypt.hashpw("Aa123456".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         db_permission = models.Permission(
@@ -34,12 +46,21 @@ def create_employee(db: Session, employee: schemas.EmployeeCreate):
 
     return db_employee
 
+def delete_employee_by_id(db: Session, employee_id: int):
+    employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
+    if not employee:
+        return {"error": "Employee not found"}
+    db.delete(employee)
+    db.commit()
+    return {"message": "Employee deleted successfully"}
+
 def get_branches(db: Session):
     return db.query(models.Branch).all()
 
-# Replace this function
+def get_branch_by_name(db: Session, branch_name: str):
+    return db.query(models.Branch).filter(models.Branch.name == branch_name).all()
+
 def create_branch(db: Session, branch: schemas.BranchCreate):
-    # Validate that the manager exists and has the "Manager" role
     manager = db.query(models.Employee).filter(
         models.Employee.personal_id == branch.manager_id,
         models.Employee.role == "Manager"
@@ -47,10 +68,16 @@ def create_branch(db: Session, branch: schemas.BranchCreate):
     if not manager:
         raise ValueError("Manager ID must correspond to an existing manager.")
     
-    # Create the branch
     db_branch = models.Branch(**branch.dict())
     db.add(db_branch)
     db.commit()
     db.refresh(db_branch)
     return db_branch
 
+def delete_branch_by_id(db: Session, branch_id: int):
+    branch = db.query(models.Branch).filter(models.Branch.id == branch_id).first()
+    if not branch:
+        return {"error": "Branch not found"}
+    db.delete(branch)
+    db.commit()
+    return {"message": "Branch deleted successfully"}

@@ -6,19 +6,24 @@ import base64
 # API base URL
 BASE_URL = "http://backend:8000"
 
-# Function to set a background image
+# Function to encode an image for use as a background
 @st.cache_data
 def get_encoded_background(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode()
 
-def set_login_background(image_path):
+def set_background(image_path, white_text=False):
+    """
+    Apply a background image dynamically to cover the entire page, including sidebar and header.
+    Optionally, set text color to white.
+    """
     try:
         encoded_string = get_encoded_background(image_path)
+        text_color = "white" if white_text else "black"
         st.markdown(
             f"""
             <style>
-            html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {{
+            html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], [data-testid="stSidebar"] {{
                 height: 100%;
                 width: 100%;
                 margin: 0;
@@ -34,13 +39,14 @@ def set_login_background(image_path):
             }}
             .block-container {{
                 padding-top: 50px;
+                color: {text_color} !important;
             }}
             header {{
                 background-color: transparent !important;
-                color: white !important;
+                color: {text_color} !important;
             }}
             label {{
-                color: white !important;
+                color: {text_color} !important;
                 font-size: 18px;
             }}
             .stButton>button {{
@@ -52,7 +58,7 @@ def set_login_background(image_path):
                 padding: 10px 20px;
             }}
             h1, h3 {{
-                color: white !important;
+                color: {text_color} !important;
             }}
             </style>
             """,
@@ -61,42 +67,38 @@ def set_login_background(image_path):
     except FileNotFoundError:
         st.error("Background image not found. Please check the file path and ensure the file exists.")
 
-# Initialize session state for login
+# Initialize session state
 st.session_state.setdefault("authenticated", False)
 st.session_state.setdefault("username", None)
+st.session_state.setdefault("menu", "Movies")  # Default menu
 
 # Login Page
 def login_page():
-    # Use the absolute path for the background image
-    background_image_path = "/app/background.png"
-    set_login_background(background_image_path)
+    """
+    Render the login page with its specific background and login functionality.
+    """
+    # Apply login-specific background with white text
+    set_background("/app/background.png", white_text=True)
 
-    # Display title and subtitle
-    st.markdown(
-        '<h1>Cinema Management System - Login</h1>',
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        '<h3>Please log in to access the system</h3>',
-        unsafe_allow_html=True
-    )
+    # Display login page content
+    st.markdown('<h1>Cinema Management System - Login</h1>', unsafe_allow_html=True)
+    st.markdown('<h3>Please log in to access the system</h3>', unsafe_allow_html=True)
 
-    # Input fields for username and password
+    # Username and password fields
     username = st.text_input("Username", key="login_username")
     password = st.text_input("Password", type="password", key="login_password")
 
+    # Login button
     if st.button("Login"):
         if not username or not password:
             st.error("Both fields are required!")
         else:
-            # Send login request to the backend
             try:
                 response = requests.post(f"{BASE_URL}/login", json={"username": username, "password": password})
                 if response.status_code == 200:
                     st.success("Login successful!")
                     st.session_state.authenticated = True
                     st.session_state.username = username
-                    st.query_params = {'authenticated': 'true'}
                 elif response.status_code == 401:
                     st.error("Invalid username or password.")
                 else:
@@ -106,13 +108,24 @@ def login_page():
 
 # Main Application
 def main_app():
+    """
+    Render the main application, dynamically setting backgrounds based on the selected menu.
+    """
+    # Set dynamic backgrounds based on menu selection
+    if st.session_state.get("menu") == "Movies":
+        set_background("/app/moviesback.png")  # Apply the Movies background
+    else:
+        # Reset background for other sections
+        st.markdown("<style>.stApp {background: none !important;}</style>", unsafe_allow_html=True)
+
+    # Sidebar content
     st.sidebar.title(f"Welcome, {st.session_state.username}")
-    menu = st.sidebar.selectbox("Menu", ["Movies", "Employees", "Branches"])
+    menu = st.sidebar.selectbox("Menu", ["Movies", "Employees", "Branches"], key="menu")
 
     # Movies Section
     if menu == "Movies":
         st.header("Movies Management")
-        action = st.radio("Choose Action:", ["View Movies", "Add Movie"])
+        action = st.radio("Choose Action:", ["View Movies", "Add Movie"], key="movie_action")
 
         if action == "View Movies":
             st.subheader("View Movie Details")
@@ -126,7 +139,7 @@ def main_app():
                     return
 
                 # Select a movie title
-                selected_title = st.selectbox("Select a Movie", movie_titles)
+                selected_title = st.selectbox("Select a Movie", movie_titles, key="selected_movie")
 
                 # Fetch all movie details
                 details_response = requests.get(f"{BASE_URL}/movies")
@@ -146,6 +159,16 @@ def main_app():
                     st.text_input("Duration (minutes)", value=str(movie["duration_minutes"]), disabled=True)
                     st.text_input("Release Date", value=movie["release_date"], disabled=True)
                     st.text_input("Critics Rating", value=str(movie["critics_rating"]), disabled=True)
+                    
+                    if st.button("Delete Movie"):
+                        try:
+                            delete_response = requests.delete(f"{BASE_URL}/movies/{movie['id']}")
+                            if delete_response.status_code == 200:
+                                st.success("Movie deleted successfully!")
+                            else:
+                                st.error(f"Failed to delete movie: {delete_response.text}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
                 else:
                     st.error("Movie not found.")
 
@@ -188,9 +211,8 @@ def main_app():
                     else:
                         st.error(f"Failed to add movie: {response.text}")
             with col2:
-                if st.button("Clear"):
+                if st.button("Exit"):
                     st.session_state.clear()
-
     # Employees Section
     elif menu == "Employees":
         st.header("Employees Management")
@@ -231,6 +253,16 @@ def main_app():
                     st.text_input("Salary", value=str(employee["salary"]), disabled=True)
                     st.text_input("Year of Birth", value=employee["birth_year"], disabled=True)
                     st.text_input("Year of Employment", value=employee["start_year"], disabled=True)
+                    
+                    if st.button("Delete Employee"):
+                        try:
+                            delete_response = requests.delete(f"{BASE_URL}/employees/{employee['id']}")
+                            if delete_response.status_code == 200:
+                                st.success("Employee deleted successfully!")
+                            else:
+                                st.error(f"Failed to delete employee: {delete_response.text}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
                 else:
                     st.error("Employee not found.")
 
@@ -279,7 +311,7 @@ def main_app():
                         else:
                             st.error(f"Failed to add employee: {response.text}")
             with col2:
-                if st.button("Clear"):
+                if st.button("Exit"):
                     st.session_state.clear()
 
     # Branches Section
@@ -311,6 +343,16 @@ def main_app():
                     st.text_input("Closing Time", value=branch["closing_time"], disabled=True)
                     st.text_input("Opening Year", value=branch["opening_year"], disabled=True)
                     st.text_input("Customer Service Phone", value=branch["customer_service_phone"], disabled=True)
+                    
+                    if st.button("Delete Branch"):
+                        try:
+                            delete_response = requests.delete(f"{BASE_URL}/branches/{branch['id']}")
+                            if delete_response.status_code == 200:
+                                st.success("Branch deleted successfully!")
+                            else:
+                                st.error(f"Failed to delete branch: {delete_response.text}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
                 else:
                     st.error("Branch not found.")
 
@@ -346,7 +388,7 @@ def main_app():
                         else:
                             st.error(f"Failed to add branch: {response.text}")
             with col2:
-                if st.button("Clear"):
+                if st.button("Exit"):
                     st.session_state.clear()
 
 # Show the appropriate page

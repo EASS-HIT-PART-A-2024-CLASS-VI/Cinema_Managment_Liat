@@ -65,6 +65,13 @@ def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
 def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
     return crud.create_movie(db, movie)
 
+@app.delete("/movies/{movie_id}")
+def delete_movie(movie_id: int, db: Session = Depends(get_db)):
+    result = crud.delete_movie_by_id(db, movie_id)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
+
 # Employees endpoints
 @app.get("/employees", response_model=list[schemas.Employee])
 def read_employees(db: Session = Depends(get_db)):
@@ -102,6 +109,13 @@ def add_employee(employee: schemas.EmployeeCreate, db: Session = Depends(get_db)
 
     return new_employee
 
+@app.delete("/employees/{employee_id}")
+def delete_employee(employee_id: int, db: Session = Depends(get_db)):
+    result = crud.delete_employee_by_id(db, employee_id)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
+
 # Branches endpoints
 @app.get("/branches", response_model=list[schemas.Branch])
 def read_branches(db: Session = Depends(get_db)):
@@ -122,3 +136,9 @@ def get_branch_by_id(branch_id: int, db: Session = Depends(get_db)):
 def add_branch(branch: schemas.BranchCreate, db: Session = Depends(get_db)):
     return crud.create_branch(db, branch)
 
+@app.delete("/branches/{branch_id}")
+def delete_branch(branch_id: int, db: Session = Depends(get_db)):
+    result = crud.delete_branch_by_id(db, branch_id)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
