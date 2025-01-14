@@ -42,29 +42,29 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 .
 ├── README.md
 ├── backend
-│   ├── Dockerfile
-│   └── app
-│       ├── __pycache__
-│       │   ├── crud.cpython-39.pyc
-│       │   ├── database.cpython-39.pyc
-│       │   ├── main.cpython-39.pyc
-│       │   ├── models.cpython-39.pyc
-│       │   └── schemas.cpython-39.pyc
-│       ├── crud.py
-│       ├── database.py
-│       ├── main.py
-│       ├── models.py
-│       ├── requirements.txt
-│       └── schemas.py
+│   ├── Dockerfile
+│   └── app
+│       ├── __pycache__
+│       │   ├── crud.cpython-39.pyc
+│       │   ├── database.cpython-39.pyc
+│       │   ├── main.cpython-39.pyc
+│       │   ├── models.cpython-39.pyc
+│       │   └── schemas.cpython-39.pyc
+│       ├── crud.py
+│       ├── database.py
+│       ├── main.py
+│       ├── models.py
+│       ├── requirements.txt
+│       └── schemas.py
 ├── docker-compose.yml
 └── frontend
     ├── Dockerfile
     ├── background.png
+    ├── branchesback.png
     ├── employeeback.png
     ├── frontend.py
     └── moviesback.png
 ```
-
 ---
 
 ## Endpoints
@@ -133,7 +133,7 @@ docker compose up --build
   - Default password: `Aa123456`.
 - Navigate through the menu to:
   - **Manage Movies**: View, add, and delete movies.
-  - **Manage Employees**: View, add, and delete employees.
+  - **Manage Employees**: View, add, and delete employees (A manager can't be deleted if he is connected to a branch).
   - **Manage Branches**: View, add, and delete branches.
 
 ---
