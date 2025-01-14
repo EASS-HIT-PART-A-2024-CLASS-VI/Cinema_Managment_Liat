@@ -113,10 +113,11 @@ def main_app():
     """
     # Set dynamic backgrounds based on menu selection
     if st.session_state.get("menu") == "Movies":
-        set_background("/app/moviesback.png")  # Apply the Movies background
-    else:
-        # Reset background for other sections
-        st.markdown("<style>.stApp {background: none !important;}</style>", unsafe_allow_html=True)
+        set_background("/app/moviesback.png")  # Movies background
+    elif st.session_state.get("menu") == "Employees":
+        set_background("/app/employeeback.png")  # Employees background
+    elif st.session_state.get("menu") == "Branches":
+        set_background("/app/branchesback.png")  # Branches background
 
     # Sidebar content
     st.sidebar.title(f"Welcome, {st.session_state.username}")
@@ -390,7 +391,6 @@ def main_app():
             with col2:
                 if st.button("Exit"):
                     st.session_state.clear()
-
 # Show the appropriate page
 if not st.session_state.authenticated:
     login_page()
