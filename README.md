@@ -7,6 +7,12 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 
 ---
 
+<video width="640" height="480" controls>
+  <source src="app.mp4" type="video/mp4">
+  Sorry, your browser doesn't support embedded videos.
+</video>
+
+---
 ## Table of Contents
 1. [Technologies Used](#technologies-used)
 2. [Features](#features)
@@ -41,6 +47,7 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 ```plaintext
 .
 ├── README.md
+├── app.mp4
 ├── backend
 │   ├── Dockerfile
 │   └── app
@@ -57,13 +64,14 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 │       ├── requirements.txt
 │       └── schemas.py
 ├── docker-compose.yml
-└── frontend
-    ├── Dockerfile
-    ├── background.png
-    ├── branchesback.png
-    ├── employeeback.png
-    ├── frontend.py
-    └── moviesback.png
+├── frontend
+│   ├── Dockerfile
+│   ├── background.png
+│   ├── branchesback.png
+│   ├── employeeback.png
+│   ├── frontend.py
+│   └── moviesback.png
+└── integration_test.py
 ```
 ---
 
