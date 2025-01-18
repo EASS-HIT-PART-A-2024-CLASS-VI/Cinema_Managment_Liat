@@ -8,7 +8,7 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 ---
 
 <video width="640" height="480" controls>
-  <source src="app.mp4" type="video/mp4">
+  <source src="smaller_app.mp4" type="video/mp4">
   Sorry, your browser doesn't support embedded videos.
 </video>
 
