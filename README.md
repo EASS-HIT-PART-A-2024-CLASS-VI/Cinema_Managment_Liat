@@ -8,7 +8,7 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 ---
 
 <video width="640" height="480" controls>
-  <source src="smaller_app.mp4" type="video/mp4">
+  <source src="https://private-user-images.githubusercontent.com/168753974/404530278-6617cced-a03c-464e-89be-cb7927e0a7e7.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzcxOTk1OTMsIm5iZiI6MTczNzE5OTI5MywicGF0aCI6Ii8xNjg3NTM5NzQvNDA0NTMwMjc4LTY2MTdjY2VkLWEwM2MtNDY0ZS04OWJlLWNiNzkyN2UwYTdlNy5tcDQ_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMTE4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDExOFQxMTIxMzNaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04OGU5OTlmZDM3Y2FkZWM4ZmEzMGJhNDVmMDA3ZGFiY2NiZTNlYTJhNGI5Njg5ZjljYzIzNTFhNzJiN2Q1NTdlJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.6hQ6F7Xil7_rl2WWxdRFQZ2IqKQ0Xsf9YH0WcVRN5hg" type="video/mp4">
   Sorry, your browser doesn't support embedded videos.
 </video>
 
