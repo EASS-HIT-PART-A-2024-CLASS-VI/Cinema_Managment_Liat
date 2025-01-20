@@ -4,14 +4,6 @@
 The **Cinema Management System** is a comprehensive platform designed to manage and streamline operations related to cinemas, including movies, employees, and branches. This system provides an easy-to-use interface and robust backend capabilities.
 
 The backend is powered by **FastAPI**, ensuring secure and efficient API services, while the frontend is built with **Streamlit** for a user-friendly experience.
-
----
-
-<video width="640" height="480" controls>
-  <source src="smaller_app.mp4" type="video/mp4">
-  Sorry, your browser doesn't support embedded videos.
-</video>
-
 ---
 ## Table of Contents
 1. [Technologies Used](#technologies-used)
