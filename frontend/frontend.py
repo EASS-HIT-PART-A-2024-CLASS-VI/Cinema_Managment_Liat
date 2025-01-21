@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
-import datetime
 import base64
+import datetime
 
 # API base URL
 BASE_URL = "http://backend:8000"
@@ -12,23 +12,23 @@ def get_encoded_background(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode()
 
-def set_background(image_path, white_text=False):
+def set_background(image_path):
     """
-    Apply a background image dynamically to cover the entire page, including sidebar and header.
-    Optionally, set text color to white.
+    Apply a full-page background image dynamically to cover the entire page,
+    including the sidebar and header. All text remains styled as white.
     """
     try:
         encoded_string = get_encoded_background(image_path)
-        text_color = "white" if white_text else "black"
         st.markdown(
             f"""
             <style>
-            html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], [data-testid="stSidebar"] {{
-                height: 100%;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
+            html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {{
+                background-image: url("data:image/png;base64,{encoded_string}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                color: white !important;
             }}
             .stApp {{
                 background-image: url("data:image/png;base64,{encoded_string}");
@@ -38,34 +38,65 @@ def set_background(image_path, white_text=False):
                 background-attachment: fixed;
             }}
             .block-container {{
-                padding-top: 50px;
-                color: {text_color} !important;
+                padding: 2rem;
+                color: white !important;
             }}
             header {{
-                background-color: transparent !important;
-                color: {text_color} !important;
+                background: transparent !important;
+                color: white !important;
+            }}
+            .stSidebar {{
+                background-color: black !important;
+                color: white !important;
+            }}
+            .stSidebar .css-1d391kg {{
+                color: white !important;
             }}
             label {{
-                color: {text_color} !important;
+                color: white !important;
                 font-size: 18px;
             }}
             .stButton>button {{
-                background-color: white !important;
-                color: black !important;
+                background-color: black !important;
+                color: white !important;
                 font-weight: bold;
                 border-radius: 5px;
                 border: none;
                 padding: 10px 20px;
             }}
-            h1, h3 {{
-                color: {text_color} !important;
+            input, select, textarea {{
+                background-color: #333333 !important;
+                color: white !important;
+                border: 1px solid white !important;
+                font-size: 16px;
+            }}
+            input[disabled], select[disabled], textarea[disabled] {{
+                background-color: #333333 !important;
+                color: white !important;
+                border: 1px solid white !important;
+                opacity: 1 !important; /* Fix opacity issues for disabled fields */
+            }}
+            .stRadio > div {{
+                color: white !important; /* Ensure radio buttons are styled */
+            }}
+            .stRadio > div > label {{
+                color: white !important;
+                font-size: 16px;
+                font-weight: bold;
+            }}
+            [data-baseweb="select"] > div, [data-testid="stTimeInput"] > div {{
+                background-color: #333333 !important;
+                color: white !important;
+                border: 1px solid white !important;
+                font-size: 16px;
+                border-radius: 5px;
             }}
             </style>
             """,
             unsafe_allow_html=True
         )
     except FileNotFoundError:
-        st.error("Background image not found. Please check the file path and ensure the file exists.")
+        st.error("Background image not found. Please check the file path.")
 
 # Initialize session state
 st.session_state.setdefault("authenticated", False)
@@ -77,18 +108,14 @@ def login_page():
     """
     Render the login page with its specific background and login functionality.
     """
-    # Apply login-specific background with white text
-    set_background("/app/background.png", white_text=True)
+    set_background("/app/background.png")
 
-    # Display login page content
-    st.markdown('<h1>Cinema Management System - Login</h1>', unsafe_allow_html=True)
-    st.markdown('<h3>Please log in to access the system</h3>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color:white;">Cinema Management System - Login</h1>', unsafe_allow_html=True)
+    st.markdown('<h3 style="color:white;">Please log in to access the system</h3>', unsafe_allow_html=True)
 
-    # Username and password fields
     username = st.text_input("Username", key="login_username")
     password = st.text_input("Password", type="password", key="login_password")
 
-    # Login button
     if st.button("Login"):
         if not username or not password:
             st.error("Both fields are required!")
@@ -105,7 +132,6 @@ def login_page():
                     st.error(f"Error: {response.status_code} - {response.text}")
             except Exception as e:
                 st.error(f"An error occurred: {e}")
-
 # Main Application
 def main_app():
     """
@@ -115,7 +141,7 @@ def main_app():
     if st.session_state.get("menu") == "Movies":
         set_background("/app/moviesback.png")  # Movies background
     elif st.session_state.get("menu") == "Employees":
-        set_background("/app/employeeback.png")  # Employees background
+        set_background("/app/employeeback.png")  # Employees background 
     elif st.session_state.get("menu") == "Branches":
         set_background("/app/branchesback.png")  # Branches background
 
@@ -211,9 +237,6 @@ def main_app():
                         st.success("Movie added successfully!")
                     else:
                         st.error(f"Failed to add movie: {response.text}")
-            with col2:
-                if st.button("Exit"):
-                    st.session_state.clear()
     # Employees Section
     elif menu == "Employees":
         st.header("Employees Management")
@@ -311,10 +334,6 @@ def main_app():
                             st.success("Employee added successfully!")
                         else:
                             st.error(f"Failed to add employee: {response.text}")
-            with col2:
-                if st.button("Exit"):
-                    st.session_state.clear()
-
     # Branches Section
     elif menu == "Branches": 
         st.header("Branches Management")
@@ -388,9 +407,6 @@ def main_app():
                             st.success("Branch added successfully!")
                         else:
                             st.error(f"Failed to add branch: {response.text}")
-            with col2:
-                if st.button("Exit"):
-                    st.session_state.clear()
 # Show the appropriate page
 if not st.session_state.authenticated:
     login_page()
