@@ -50,9 +50,22 @@ def delete_employee_by_id(db: Session, employee_id: int):
     employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
     if not employee:
         return {"error": "Employee not found"}
+
+    # אם העובד הוא מנהל, מחיקת הרשאה מהטבלה (רק אם קיימת)
+    if employee.role.lower() == "manager":
+        permission = db.query(models.Permission).filter(
+            models.Permission.username == employee.first_name
+        ).first()
+        if permission:  # נוספה בדיקה כדי למנוע שגיאה אם הרשאה לא קיימת
+            db.delete(permission)
+
     db.delete(employee)
     db.commit()
-    return {"message": "Employee deleted successfully"}
+    return {
+        "message": "Employee and associated permissions deleted successfully"
+        if employee.role.lower() == "manager"
+        else "Employee deleted successfully"
+    }
 
 def get_branches(db: Session):
     return db.query(models.Branch).all()

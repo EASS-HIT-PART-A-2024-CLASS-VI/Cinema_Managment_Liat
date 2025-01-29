@@ -44,11 +44,18 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     return {"message": f"Successfully logged in as {request.username}"}
-
 # Movies endpoints
 @app.get("/movies/dropdown", response_model=list[str])
 def get_movie_titles(db: Session = Depends(get_db)):
     return [movie.title for movie in crud.get_movies(db)]
+
+@app.get("/movies/sorted", response_model=list[schemas.Movie])  # sorted endpoint must come before {movie_id}
+def get_sorted_movies(db: Session = Depends(get_db)):
+    """
+    Get movies sorted by critics_rating in descending order.
+    """
+    movies = db.query(models.Movie).order_by(models.Movie.critics_rating.desc()).all()
+    return movies
 
 @app.get("/movies", response_model=list[schemas.Movie])
 def read_movies(db: Session = Depends(get_db)):
@@ -56,6 +63,9 @@ def read_movies(db: Session = Depends(get_db)):
 
 @app.get("/movies/{movie_id}", response_model=schemas.Movie)
 def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
+    """
+    Get a movie by its ID.
+    """
     movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
@@ -63,10 +73,16 @@ def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
 
 @app.post("/movies", response_model=schemas.Movie)
 def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
+    """
+    Add a new movie to the database.
+    """
     return crud.create_movie(db, movie)
 
 @app.delete("/movies/{movie_id}")
 def delete_movie(movie_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a movie by its ID.
+    """
     result = crud.delete_movie_by_id(db, movie_id)
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])

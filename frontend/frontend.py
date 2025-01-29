@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import base64
 import datetime
-
+import pandas as pd
 # API base URL
 BASE_URL = "http://backend:8000"
 
@@ -141,7 +141,7 @@ def main_app():
     if st.session_state.get("menu") == "Movies":
         set_background("/app/moviesback.png")  # Movies background
     elif st.session_state.get("menu") == "Employees":
-        set_background("/app/employeeback.png")  # Employees background 
+        set_background("/app/employeeback.png")  # Employees background
     elif st.session_state.get("menu") == "Branches":
         set_background("/app/branchesback.png")  # Branches background
 
@@ -152,91 +152,112 @@ def main_app():
     # Movies Section
     if menu == "Movies":
         st.header("Movies Management")
-        action = st.radio("Choose Action:", ["View Movies", "Add Movie"], key="movie_action")
 
-        if action == "View Movies":
-            st.subheader("View Movie Details")
-            try:
-                # Fetch movie titles for dropdown
-                titles_response = requests.get(f"{BASE_URL}/movies/dropdown")
-                if titles_response.status_code == 200:
-                    movie_titles = titles_response.json()
+        # Add button for showing sorted movies in the sidebar
+        if st.sidebar.button("Show Sorted Movies 🎬"):
+            st.subheader("🎬 Sorted Movies by Rating")
+
+            # Fetch sorted movies from the backend
+            response = requests.get(f"{BASE_URL}/movies/sorted")
+            if response.status_code == 200:
+                movies = response.json()
+                if movies:
+                    # Create a DataFrame for display
+                    df = pd.DataFrame(movies)
+                    df = df[["title", "critics_rating", "genre"]]  # Select relevant columns
+                    df.columns = ["Movie Name", "Rating", "Genre"]  # Rename columns
+                    st.dataframe(df, use_container_width=True)  # Display the table
                 else:
-                    st.error("Failed to fetch movie titles.")
-                    return
-
-                # Select a movie title
-                selected_title = st.selectbox("Select a Movie", movie_titles, key="selected_movie")
-
-                # Fetch all movie details
-                details_response = requests.get(f"{BASE_URL}/movies")
-                if details_response.status_code == 200:
-                    movies = details_response.json()
-                    movie = next((m for m in movies if m["title"] == selected_title), None)
-                else:
-                    st.error("Failed to fetch movie details.")
-                    return
-
-                if movie:
-                    # Display movie details including critics rating
-                    st.text_input("Title", value=movie["title"], disabled=True)
-                    st.text_input("Genre", value=movie["genre"], disabled=True)
-                    st.text_input("Director", value=movie["director"], disabled=True)
-                    st.text_input("Age Restriction", value=str(movie["age_limit"]), disabled=True)
-                    st.text_input("Duration (minutes)", value=str(movie["duration_minutes"]), disabled=True)
-                    st.text_input("Release Date", value=movie["release_date"], disabled=True)
-                    st.text_input("Critics Rating", value=str(movie["critics_rating"]), disabled=True)
-                    
-                    if st.button("Delete Movie"):
-                        try:
-                            delete_response = requests.delete(f"{BASE_URL}/movies/{movie['id']}")
-                            if delete_response.status_code == 200:
-                                st.success("Movie deleted successfully!")
-                            else:
-                                st.error(f"Failed to delete movie: {delete_response.text}")
-                        except Exception as e:
-                            st.error(f"An error occurred: {e}")
-                else:
-                    st.error("Movie not found.")
-
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
-
-        elif action == "Add Movie":
-            st.subheader("Add a New Movie")
-            movie_name = st.text_input("Movie Name", key="movie_name")
-            genre = st.selectbox(
-                "Genre",
-                [
-                    "Comedy", "Romance", "Action", "Horror", "Sci-Fi",
-                    "Fantasy", "Thriller", "Drama", "Mystery", "Documentary"
-                ],
-                key="genre"
-            )
-            age_restriction = st.selectbox("Age Restriction", [True, False], key="age_restriction")
-            director = st.text_input("Director Name", key="director")
-            duration = st.number_input("Duration (minutes)", min_value=1, step=1, key="duration")
-            release_date = st.date_input("Release Date", min_value=datetime.date(1970, 1, 1), key="release_date")
-            critics_rating = st.number_input("Critics Rating", min_value=0.0, max_value=10.0, step=0.1, key="critics_rating")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("Save Movie"):
-                    # Build the payload with critics_rating
-                    movie_data = {
-                        "title": movie_name,
-                        "genre": genre,
-                        "age_limit": age_restriction,
-                        "director": director,
-                        "duration_minutes": duration,
-                        "release_date": str(release_date),
-                        "critics_rating": critics_rating
-                    }
-                    response = requests.post(f"{BASE_URL}/movies", json=movie_data)
-                    if response.status_code == 200:
-                        st.success("Movie added successfully!")
+                    st.warning("No movies found in the database.")
+            else:
+                st.error("Failed to fetch movies from the API.")
+        else:
+            # Actions for managing movies (view or add) will be shown only if the button is not pressed
+            action = st.radio("Choose Action:", ["View Movies", "Add Movie"], key="movie_action")
+            
+            if action == "View Movies":
+                st.subheader("View Movie Details")
+                try:
+                    # Fetch movie titles for dropdown
+                    titles_response = requests.get(f"{BASE_URL}/movies/dropdown")
+                    if titles_response.status_code == 200:
+                        movie_titles = titles_response.json()
                     else:
-                        st.error(f"Failed to add movie: {response.text}")
+                        st.error("Failed to fetch movie titles.")
+                        return
+
+                    # Select a movie title
+                    selected_title = st.selectbox("Select a Movie", movie_titles, key="selected_movie")
+
+                    # Fetch all movie details
+                    details_response = requests.get(f"{BASE_URL}/movies")
+                    if details_response.status_code == 200:
+                        movies = details_response.json()
+                        movie = next((m for m in movies if m["title"] == selected_title), None)
+                    else:
+                        st.error("Failed to fetch movie details.")
+                        return
+
+                    if movie:
+                        # Display movie details including critics rating
+                        st.text_input("Title", value=movie["title"], disabled=True)
+                        st.text_input("Genre", value=movie["genre"], disabled=True)
+                        st.text_input("Director", value=movie["director"], disabled=True)
+                        st.text_input("Age Restriction", value=str(movie["age_limit"]), disabled=True)
+                        st.text_input("Duration (minutes)", value=str(movie["duration_minutes"]), disabled=True)
+                        st.text_input("Release Date", value=movie["release_date"], disabled=True)
+                        st.text_input("Critics Rating", value=str(movie["critics_rating"]), disabled=True)
+                        
+                        if st.button("Delete Movie"):
+                            try:
+                                delete_response = requests.delete(f"{BASE_URL}/movies/{movie['id']}")
+                                if delete_response.status_code == 200:
+                                    st.success("Movie deleted successfully!")
+                                else:
+                                    st.error(f"Failed to delete movie: {delete_response.text}")
+                            except Exception as e:
+                                st.error(f"An error occurred: {e}")
+                    else:
+                        st.error("Movie not found.")
+
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
+
+            elif action == "Add Movie":
+                st.subheader("Add a New Movie")
+                movie_name = st.text_input("Movie Name", key="movie_name")
+                genre = st.selectbox(
+                    "Genre",
+                    [
+                        "Comedy", "Romance", "Action", "Horror", "Sci-Fi",
+                        "Fantasy", "Thriller", "Drama", "Mystery", "Documentary"
+                    ],
+                    key="genre"
+                )
+                age_restriction = st.selectbox("Age Restriction", [True, False], key="age_restriction")
+                director = st.text_input("Director Name", key="director")
+                duration = st.number_input("Duration (minutes)", min_value=1, step=1, key="duration")
+                release_date = st.date_input("Release Date", min_value=datetime.date(1970, 1, 1), key="release_date")
+                critics_rating = st.number_input("Critics Rating", min_value=0.0, max_value=10.0, step=0.1, key="critics_rating")
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Save Movie"):
+                        # Build the payload with critics_rating
+                        movie_data = {
+                            "title": movie_name,
+                            "genre": genre,
+                            "age_limit": age_restriction,
+                            "director": director,
+                            "duration_minutes": duration,
+                            "release_date": str(release_date),
+                            "critics_rating": critics_rating
+                        }
+                        response = requests.post(f"{BASE_URL}/movies", json=movie_data)
+                        if response.status_code == 200:
+                            st.success("Movie added successfully!")
+                        else:
+                            st.error(f"Failed to add movie: {response.text}")
     # Employees Section
     elif menu == "Employees":
         st.header("Employees Management")
