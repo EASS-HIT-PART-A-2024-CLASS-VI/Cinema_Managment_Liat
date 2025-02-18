@@ -1,21 +1,17 @@
 FROM python:3.9-slim
 
-# Set working directory
+# הגדרת סביבת העבודה בתוך הקונטיינר
 WORKDIR /app
 
-# Upgrade pip and install dependencies with increased timeout
 RUN pip install --upgrade pip
 RUN pip install --timeout=1000 streamlit requests
 
-# Copy application files
-COPY ./frontend.py /app/frontend.py
-COPY ./background.png /app/background.png
-COPY ./moviesback.png /app/moviesback.png
-COPY ./employeeback.png /app/employeeback.png
-COPY ./branchesback.png /app/branchesback.png
+# העתקת כל הקבצים הרלוונטיים
+COPY ./app.py /app/app.py
+COPY ./components /app/components
+COPY ./pages /app/pages
+COPY ./assets /app/assets
 
-# Expose the port Streamlit will use
 EXPOSE 8501
 
-# Run the Streamlit application
-CMD ["streamlit", "run", "frontend.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
