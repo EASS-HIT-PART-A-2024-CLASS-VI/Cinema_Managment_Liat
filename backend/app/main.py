@@ -44,12 +44,18 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     return {"message": f"Successfully logged in as {request.username}"}
+
+# Logout endpoint
+@app.post("/logout")
+def logout():
+    return {"message": "Logged out successfully"}
+
 # Movies endpoints
 @app.get("/movies/dropdown", response_model=list[str])
 def get_movie_titles(db: Session = Depends(get_db)):
     return [movie.title for movie in crud.get_movies(db)]
 
-@app.get("/movies/sorted", response_model=list[schemas.Movie])  # sorted endpoint must come before {movie_id}
+@app.get("/movies/sorted", response_model=list[schemas.Movie])
 def get_sorted_movies(db: Session = Depends(get_db)):
     """
     Get movies sorted by critics_rating in descending order.

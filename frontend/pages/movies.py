@@ -4,6 +4,13 @@ import pandas as pd
 
 BASE_URL = "http://backend:8000"
 
+def logout():
+    """ Logout function: Clears session state and redirects to login page. """
+    st.session_state.authenticated = False
+    st.session_state.username = None
+    st.session_state.menu = "Movies"
+    st.rerun()  # מבצע רענון ומחזיר לדף הלוגין
+
 def movies_page():
     """
     Render the Movies Management page.
@@ -43,7 +50,7 @@ def movies_page():
                 st.error("Failed to fetch movie titles.")
                 return
 
-            # Select a movie title (ודואג שזה יהיה dropdown ולא text input)
+            # Select a movie title
             selected_title = st.selectbox("Select a Movie", movie_titles, key="selected_movie")
 
             # Fetch all movie details
@@ -64,15 +71,23 @@ def movies_page():
                 st.text_input("Release Date", value=movie["release_date"], disabled=True)
                 st.text_input("Critics Rating", value=str(movie["critics_rating"]), disabled=True)
 
-                if st.button("Delete Movie"):
-                    try:
-                        delete_response = requests.delete(f"{BASE_URL}/movies/{movie['id']}")
-                        if delete_response.status_code == 200:
-                            st.success("Movie deleted successfully!")
-                        else:
-                            st.error(f"Failed to delete movie: {delete_response.text}")
-                    except Exception as e:
-                        st.error(f"An error occurred: {e}")
+                # כפתורי Delete ו-Logout בשורה אחת
+                col1, col2 = st.columns([1, 1])
+
+                with col1:
+                    if st.button("Delete Movie"):
+                        try:
+                            delete_response = requests.delete(f"{BASE_URL}/movies/{movie['id']}")
+                            if delete_response.status_code == 200:
+                                st.success("Movie deleted successfully!")
+                            else:
+                                st.error(f"Failed to delete movie: {delete_response.text}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
+
+                with col2:
+                    if st.button("Logout"):
+                        logout()
             else:
                 st.error("Movie not found.")
 
@@ -93,18 +108,26 @@ def movies_page():
         release_date = st.date_input("Release Date", key="release_date")
         critics_rating = st.number_input("Critics Rating", min_value=0.0, max_value=10.0, step=0.1, key="critics_rating")
 
-        if st.button("Save Movie"):
-            movie_data = {
-                "title": movie_name,
-                "genre": genre,
-                "age_limit": age_restriction,
-                "director": director,
-                "duration_minutes": duration,
-                "release_date": str(release_date),
-                "critics_rating": critics_rating
-            }
-            response = requests.post(f"{BASE_URL}/movies", json=movie_data)
-            if response.status_code == 200:
-                st.success("Movie added successfully!")
-            else:
-                st.error(f"Failed to add movie: {response.text}")
+        # כפתורי Save ו-Logout בשורה אחת
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+            if st.button("Save Movie"):
+                movie_data = {
+                    "title": movie_name,
+                    "genre": genre,
+                    "age_limit": age_restriction,
+                    "director": director,
+                    "duration_minutes": duration,
+                    "release_date": str(release_date),
+                    "critics_rating": critics_rating
+                }
+                response = requests.post(f"{BASE_URL}/movies", json=movie_data)
+                if response.status_code == 200:
+                    st.success("Movie added successfully!")
+                else:
+                    st.error(f"Failed to add movie: {response.text}")
+
+        with col2:
+            if st.button("Logout"):
+                logout()

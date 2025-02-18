@@ -6,6 +6,13 @@ import pandas as pd
 # API base URL
 BASE_URL = "http://backend:8000"
 
+def logout():
+    """ Logout function: Clears session state and redirects to login page. """
+    st.session_state.authenticated = False
+    st.session_state.username = None
+    st.session_state.menu = "Branches"
+    st.rerun()  # מבצע רענון מידי ומחזיר לדף הלוגין
+
 def branches_page():
     """
     Render the Branches Management page.
@@ -35,15 +42,24 @@ def branches_page():
                 st.text_input("Opening Year", value=branch["opening_year"], disabled=True)
                 st.text_input("Customer Service Phone", value=branch["customer_service_phone"], disabled=True)
                 
-                if st.button("Delete Branch"):
-                    try:
-                        delete_response = requests.delete(f"{BASE_URL}/branches/{branch['id']}")
-                        if delete_response.status_code == 200:
-                            st.success("Branch deleted successfully!")
-                        else:
-                            st.error(f"Failed to delete branch: {delete_response.text}")
-                    except Exception as e:
-                        st.error(f"An error occurred: {e}")
+                # 🔹 כפתורי Delete ו-Logout בשורה אחת
+                col1, col2 = st.columns([1, 1])
+
+                with col1:
+                    if st.button("Delete Branch"):
+                        try:
+                            delete_response = requests.delete(f"{BASE_URL}/branches/{branch['id']}")
+                            if delete_response.status_code == 200:
+                                st.success("Branch deleted successfully!")
+                            else:
+                                st.error(f"Failed to delete branch: {delete_response.text}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
+
+                with col2:
+                    if st.button("Logout"):
+                        logout()
+
             else:
                 st.error("Branch not found.")
 
@@ -59,7 +75,9 @@ def branches_page():
         opening_year = st.date_input("Opening Year", min_value=datetime.date(1970, 1, 1), key="opening_year")
         customer_service_phone = st.text_input("Customer Service Phone", key="customer_service_phone")
 
-        col1, col2 = st.columns(2)
+        # 🔹 כפתורי Save ו-Logout בשורה אחת
+        col1, col2 = st.columns([1, 1])
+
         with col1:
             if st.button("Save Branch"):
                 if not customer_service_phone.isdigit():
@@ -78,3 +96,7 @@ def branches_page():
                         st.success("Branch added successfully!")
                     else:
                         st.error(f"Failed to add branch: {response.text}")
+
+        with col2:
+            if st.button("Logout"):
+                logout()

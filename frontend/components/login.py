@@ -10,6 +10,11 @@ def login_page():
     """
     set_background("/app/assets/background.png")
 
+    # אם המשתמש כבר מחובר, לא להציג שוב את מסך ההתחברות
+    if st.session_state.get("authenticated", False):
+        st.success("You are already logged in!")
+        st.stop()
+
     st.markdown('<h1 style="color:white;">Cinema Management System - Login</h1>', unsafe_allow_html=True)
     st.markdown('<h3 style="color:white;">Please log in to access the system</h3>', unsafe_allow_html=True)
 
@@ -26,7 +31,7 @@ def login_page():
                     st.success("Login successful!")
                     st.session_state.authenticated = True
                     st.session_state.username = username
-                    st.rerun()  
+                    st.rerun()
                 elif response.status_code == 401:
                     st.error("Invalid username or password.")
                 else:

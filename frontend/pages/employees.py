@@ -6,6 +6,13 @@ import pandas as pd
 # API base URL
 BASE_URL = "http://backend:8000"
 
+def logout():
+    """ Logout function: Clears session state and redirects to login page. """
+    st.session_state.authenticated = False
+    st.session_state.username = None
+    st.session_state.menu = "Employees"
+    st.rerun()  # מבצע רענון מידי ומחזיר לדף הלוגין
+
 def employees_page():
     """
     Render the Employees Management page.
@@ -45,15 +52,24 @@ def employees_page():
                 st.text_input("Year of Birth", value=employee["birth_year"], disabled=True)
                 st.text_input("Year of Employment", value=employee["start_year"], disabled=True)
                 
-                if st.button("Delete Employee"):
-                    try:
-                        delete_response = requests.delete(f"{BASE_URL}/employees/{employee['id']}")
-                        if delete_response.status_code == 200:
-                            st.success("Employee deleted successfully!")
-                        else:
-                            st.error(f"Failed to delete employee: {delete_response.text}")
-                    except Exception as e:
-                        st.error(f"An error occurred: {e}")
+                # 🔹 כפתורי Delete ו-Logout בשורה אחת
+                col1, col2 = st.columns([1, 1])
+
+                with col1:
+                    if st.button("Delete Employee"):
+                        try:
+                            delete_response = requests.delete(f"{BASE_URL}/employees/{employee['id']}")
+                            if delete_response.status_code == 200:
+                                st.success("Employee deleted successfully!")
+                            else:
+                                st.error(f"Failed to delete employee: {delete_response.text}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
+
+                with col2:
+                    if st.button("Logout"):
+                        logout()
+
             else:
                 st.error("Employee not found.")
 
@@ -79,7 +95,9 @@ def employees_page():
         city_of_residence = st.text_input("City of Residence", key="city")
         salary = st.number_input("Salary", min_value=0, step=1, key="salary")
 
-        col1, col2 = st.columns(2)
+        # 🔹 כפתורי Save ו-Logout בשורה אחת
+        col1, col2 = st.columns([1, 1])
+
         with col1:
             if st.button("Save Employee"):
                 if not phone_number.isdigit():
@@ -101,3 +119,7 @@ def employees_page():
                         st.success("Employee added successfully!")
                     else:
                         st.error(f"Failed to add employee: {response.text}")
+
+        with col2:
+            if st.button("Logout"):
+                logout()
