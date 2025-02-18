@@ -29,6 +29,9 @@ def get_employees(db: Session):
 def get_employee_by_name(db: Session, employee_name: str):
     return db.query(models.Employee).filter(models.Employee.first_name + " " + models.Employee.last_name == employee_name).all()
 
+def get_sorted_employees_by_salary(db: Session):
+    return db.query(models.Employee).order_by(models.Employee.salary.desc()).all()
+
 def create_employee(db: Session, employee: schemas.EmployeeCreate):
     db_employee = models.Employee(**employee.dict())
     db.add(db_employee)
@@ -51,12 +54,11 @@ def delete_employee_by_id(db: Session, employee_id: int):
     if not employee:
         return {"error": "Employee not found"}
 
-    # אם העובד הוא מנהל, מחיקת הרשאה מהטבלה (רק אם קיימת)
     if employee.role.lower() == "manager":
         permission = db.query(models.Permission).filter(
             models.Permission.username == employee.first_name
         ).first()
-        if permission:  # נוספה בדיקה כדי למנוע שגיאה אם הרשאה לא קיימת
+        if permission:
             db.delete(permission)
 
     db.delete(employee)

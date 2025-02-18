@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import pandas as pd
 
 BASE_URL = "http://backend:8000"
 
@@ -26,9 +25,16 @@ def sidebar():
     menu_options = ["Movies", "Employees", "Branches"]
     st.session_state.menu = st.sidebar.selectbox("Menu", menu_options)
 
-    # כפתור להצגת סרטים מדורגים
+    # כפתור להצגת סרטים מדורגים 🎬
     if st.session_state.menu == "Movies":
         if st.sidebar.button("Show Sorted Movies 🎬"):
             st.session_state.show_sorted_movies = True
         else:
             st.session_state.show_sorted_movies = False
+
+    # כפתור למיון עובדים לפי שכר 💰
+    if st.session_state.menu == "Employees":
+        if st.sidebar.button("Sort Employees by Salary 💰"):
+            st.session_state.show_sorted_employees = True
+        else:
+            st.session_state.show_sorted_employees = False

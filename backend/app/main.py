@@ -103,6 +103,13 @@ def read_employees(db: Session = Depends(get_db)):
 def get_employee_names(db: Session = Depends(get_db)):
     return [employee.first_name + " " + employee.last_name for employee in crud.get_employees(db)]
 
+@app.get("/employees/sorted", response_model=list[schemas.Employee])
+def get_sorted_employees(db: Session = Depends(get_db)):
+    """
+    Get employees sorted by salary in descending order.
+    """
+    return crud.get_sorted_employees_by_salary(db)
+
 @app.get("/employees/{employee_id}", response_model=schemas.Employee)
 def get_employee_by_id(employee_id: str, db: Session = Depends(get_db)):
     employee = db.query(models.Employee).filter(models.Employee.personal_id == employee_id).first()
