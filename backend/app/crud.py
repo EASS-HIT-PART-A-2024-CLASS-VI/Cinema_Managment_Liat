@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 import models, schemas
 import bcrypt
+from datetime import datetime
+from sqlalchemy.sql import extract
 
 def get_movies(db: Session):
     return db.query(models.Movie).all()
@@ -31,6 +33,33 @@ def get_employee_by_name(db: Session, employee_name: str):
 
 def get_sorted_employees_by_salary(db: Session):
     return db.query(models.Employee).order_by(models.Employee.salary.desc()).all()
+
+def get_employees_with_birthdays(db: Session):
+    current_month = datetime.now().month
+
+    # שימוש ב-ORM של SQLAlchemy לביצוע שאילתא נכונה
+    employees = db.query(models.Employee).filter(
+        extract('month', models.Employee.birth_year) == current_month
+    ).all()
+
+    # עיבוד תוצאות וחישוב גיל העובד
+    employee_list = [
+        {
+            "id": emp.id,
+            "personal_id": emp.personal_id,
+            "first_name": emp.first_name,
+            "last_name": emp.last_name,
+            "birth_year": emp.birth_year,
+            "start_year": emp.start_year,
+            "role": emp.role,
+            "city": emp.city,
+            "salary": emp.salary,
+            "age": datetime.now().year - emp.birth_year.year  # חישוב גיל
+        }
+        for emp in employees
+    ]
+
+    return employee_list
 
 def create_employee(db: Session, employee: schemas.EmployeeCreate):
     db_employee = models.Employee(**employee.dict())

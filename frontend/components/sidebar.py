@@ -38,3 +38,8 @@ def sidebar():
             st.session_state.show_sorted_employees = True
         else:
             st.session_state.show_sorted_employees = False
+        # כפתור להצגת עובדים עם יומולדת 🎂
+        if st.sidebar.button("Birthdays 🎂"):
+            st.session_state.show_birthdays = True
+        else:
+            st.session_state.show_birthdays = False

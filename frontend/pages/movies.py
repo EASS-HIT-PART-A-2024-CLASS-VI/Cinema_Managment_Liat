@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import datetime
 
 BASE_URL = "http://backend:8000"
 
@@ -105,7 +106,7 @@ def movies_page():
         age_restriction = st.selectbox("Age Restriction", [True, False], key="age_restriction")
         director = st.text_input("Director Name", key="director")
         duration = st.number_input("Duration (minutes)", min_value=1, step=1, key="duration")
-        release_date = st.date_input("Release Date", key="release_date")
+        release_date = st.date_input("Release Date", min_value=datetime.date(1970, 1, 1), key="release_date")
         critics_rating = st.number_input("Critics Rating", min_value=0.0, max_value=10.0, step=0.1, key="critics_rating")
 
         # כפתורי Save ו-Logout בשורה אחת

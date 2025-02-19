@@ -110,6 +110,10 @@ def get_sorted_employees(db: Session = Depends(get_db)):
     """
     return crud.get_sorted_employees_by_salary(db)
 
+@app.get("/employees/birthdays")
+def get_employees_with_birthdays(db: Session = Depends(get_db)):
+    return crud.get_employees_with_birthdays(db)
+
 @app.get("/employees/{employee_id}", response_model=schemas.Employee)
 def get_employee_by_id(employee_id: str, db: Session = Depends(get_db)):
     employee = db.query(models.Employee).filter(models.Employee.personal_id == employee_id).first()

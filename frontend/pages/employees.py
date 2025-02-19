@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import datetime
 
 # API base URL
 BASE_URL = "http://backend:8000"
@@ -18,8 +19,60 @@ def employees_page():
     """
     Render the Employees Management page.
     """
-    st.header("Employees Management")
+    st.markdown("""
+        <style>
+        .birthday-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease-in-out;
+            text-align: center;
+        }
+        .birthday-card:hover {
+            transform: scale(1.05);
+        }
+        .birthday-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .birthday-info {
+            font-size: 1.2em;
+            color: white;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
+    st.header("Employees Management")
+    
+    if st.session_state.get("show_birthdays", False):
+        st.markdown("<h2 style='text-align: center; color: white;'>Employees with Birthdays this Month 🎂</h2>", unsafe_allow_html=True)
+        try:
+            response = requests.get(f"{BASE_URL}/employees/birthdays")
+            if response.status_code == 200:
+                birthday_employees = response.json()
+                if not birthday_employees:
+                    st.info("No employees have a birthday this month.")
+                    return
+                
+                for emp in birthday_employees:
+                    with st.expander(f" **{emp['first_name']} {emp['last_name']} ({emp['age']} years old)** 🎉"):
+                        st.markdown(f"""
+                            <div class="birthday-card">
+                                <!-- FIX: Changed from emp['emp_id'] to emp['personal_id'] -->
+                                <div class="birthday-info"><strong>ID:</strong> {emp['personal_id']}</div>
+                                <div class="birthday-info"><strong>Role:</strong> {emp['role']}</div>
+                                <div class="birthday-info"><strong>City:</strong> {emp['city']}</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+            else:
+                st.error("Failed to fetch birthday employees.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+        return
+    
     # הצגת רשימת עובדים ממיונים אם נלחץ הכפתור בסיידבאר
     if st.session_state.get("show_sorted_employees", False):
         st.subheader("Employees Sorted by Salary 💸")
@@ -27,8 +80,6 @@ def employees_page():
             sorted_response = requests.get(f"{BASE_URL}/employees/sorted")
             if sorted_response.status_code == 200:
                 sorted_employees = sorted_response.json()
-
-                # המרת הנתונים לטבלה
                 df = pd.DataFrame(sorted_employees, columns=["first_name", "last_name", "salary", "role"])
                 df["Full Name"] = df["first_name"] + " " + df["last_name"]
                 df = df[["Full Name", "salary", "role"]]
@@ -38,7 +89,6 @@ def employees_page():
                 st.error("Failed to fetch sorted employees.")
         except Exception as e:
             st.error(f"An error occurred: {e}")
-
     else:
         # הצגת דף רגיל לניהול עובדים
         action = st.radio("Choose Action:", ["View Employees", "Add Employee"])
@@ -59,7 +109,11 @@ def employees_page():
                 details_response = requests.get(f"{BASE_URL}/employees")
                 if details_response.status_code == 200:
                     employees = details_response.json()
-                    employee = next((e for e in employees if e["first_name"] + " " + e["last_name"] == selected_employee_name), None)
+                    employee = next(
+                        (e for e in employees 
+                         if e["first_name"] + " " + e["last_name"] == selected_employee_name), 
+                        None
+                    )
                 else:
                     st.error("Failed to fetch employee details.")
                     return
@@ -105,8 +159,8 @@ def employees_page():
             phone_number = st.text_input("Phone Number", key="phone_number")
             first_name = st.text_input("First Name", key="first_name")
             last_name = st.text_input("Last Name", key="last_name")
-            year_of_birth = st.date_input("Year of Birth", key="birth_year")
-            year_of_employment = st.date_input("Year of Employment", key="start_year")
+            year_of_birth = st.date_input("Year of Birth", min_value=datetime.date(1970, 1, 1), key="birth_year")
+            year_of_employment = st.date_input("Year of Employment", min_value=datetime.date(1970, 1, 1), key="start_year")
             role = st.selectbox(
                 "Role",
                 [
