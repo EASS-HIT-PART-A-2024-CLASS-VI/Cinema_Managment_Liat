@@ -51,10 +51,12 @@ def logout():
     return {"message": "Logged out successfully"}
 
 # Movies endpoints
+# 📌 שליפת רשימת הסרטים בתור dropdown
 @app.get("/movies/dropdown", response_model=list[str])
 def get_movie_titles(db: Session = Depends(get_db)):
     return [movie.title for movie in crud.get_movies(db)]
 
+# 📌 שליפת סרטים ממוינים לפי דירוג מבקרים
 @app.get("/movies/sorted", response_model=list[schemas.Movie])
 def get_sorted_movies(db: Session = Depends(get_db)):
     """
@@ -63,10 +65,12 @@ def get_sorted_movies(db: Session = Depends(get_db)):
     movies = db.query(models.Movie).order_by(models.Movie.critics_rating.desc()).all()
     return movies
 
+# 📌 שליפת כל הסרטים
 @app.get("/movies", response_model=list[schemas.Movie])
 def read_movies(db: Session = Depends(get_db)):
     return crud.get_movies(db)
 
+# 📌 שליפת סרט לפי ID
 @app.get("/movies/{movie_id}", response_model=schemas.Movie)
 def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
     """
@@ -77,6 +81,7 @@ def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
 
+# 📌 הוספת סרט חדש
 @app.post("/movies", response_model=schemas.Movie)
 def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
     """
@@ -84,15 +89,21 @@ def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
     """
     return crud.create_movie(db, movie)
 
+# 📌 מחיקת סרט + החזרת שם הסרט שנמחק
 @app.delete("/movies/{movie_id}")
 def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     """
-    Delete a movie by its ID.
+    Delete a movie by its ID and return its title to update the screening schedule.
     """
-    result = crud.delete_movie_by_id(db, movie_id)
-    if "error" in result:
-        raise HTTPException(status_code=404, detail=result["error"])
-    return result
+    movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    movie_title = movie.title  # שמירת שם הסרט לפני המחיקה
+    db.delete(movie)
+    db.commit()
+
+    return {"message": "Movie deleted successfully", "deleted_movie": movie_title}
 
 # Employees endpoints
 @app.get("/employees", response_model=list[schemas.Employee])

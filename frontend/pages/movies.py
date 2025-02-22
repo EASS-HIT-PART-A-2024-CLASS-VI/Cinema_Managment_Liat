@@ -12,6 +12,16 @@ def logout():
     st.session_state.menu = "Movies"
     st.rerun()  # מבצע רענון ומחזיר לדף הלוגין
 
+def delete_movie_from_schedule(movie_title):
+    """
+    Remove a deleted movie from all schedules in session state.
+    """
+    for key in st.session_state.keys():
+        if key.startswith("screenings_"):  # מחפשים את לוחות ההקרנות של כל הסניפים
+            for hall in st.session_state[key]:
+                for time in st.session_state[key][hall]:
+                    if st.session_state[key][hall][time] == movie_title:
+                        st.session_state[key][hall][time] = None  # פינוי המקום בלוז
 def movies_page():
     """
     Render the Movies Management page.

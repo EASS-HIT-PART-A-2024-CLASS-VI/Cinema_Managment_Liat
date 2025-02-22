@@ -23,23 +23,40 @@ def sidebar():
 
     # תפריט ניווט
     menu_options = ["Movies", "Employees", "Branches"]
-    st.session_state.menu = st.sidebar.selectbox("Menu", menu_options)
+    
+    # Get previous menu selection
+    previous_menu = st.session_state.get("menu")
+    
+    # Update menu selection
+    current_menu = st.sidebar.selectbox("Menu", menu_options)
+    st.session_state.menu = current_menu
+    
+    # Reset manage_screenings when switching away from Branches
+    if previous_menu == "Branches" and current_menu != "Branches":
+        st.session_state.manage_screenings = False
 
-    # כפתור להצגת סרטים מדורגים 🎬
+    # כפתור "Show Sorted Movies" מופיע רק אם נמצאים בעמוד Movies
     if st.session_state.menu == "Movies":
         if st.sidebar.button("Show Sorted Movies 🎬"):
             st.session_state.show_sorted_movies = True
         else:
             st.session_state.show_sorted_movies = False
 
-    # כפתור למיון עובדים לפי שכר 💰
+    # כפתורים ייעודיים לעמוד Employees
     if st.session_state.menu == "Employees":
         if st.sidebar.button("Sort Employees by Salary 💰"):
             st.session_state.show_sorted_employees = True
         else:
             st.session_state.show_sorted_employees = False
-        # כפתור להצגת עובדים עם יומולדת 🎂
+
         if st.sidebar.button("Birthdays 🎂"):
             st.session_state.show_birthdays = True
         else:
             st.session_state.show_birthdays = False
+
+    # כפתור לניהול לוח ההקרנות יופיע **רק** אם נמצאים בעמוד Branches
+    if st.session_state.menu == "Branches":
+        # אם לוחצים עליו, נגדיר manage_screenings = True;
+        # אם לא לוחצים — לא נדרוס את הערך, כדי לא למחוק מצב קודם.
+        if st.sidebar.button("Manage Screenings 📽️"):
+            st.session_state.manage_screenings = True

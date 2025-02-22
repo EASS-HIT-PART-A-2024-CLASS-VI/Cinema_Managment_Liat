@@ -4,7 +4,13 @@ FROM python:3.9-slim
 WORKDIR /app
 
 RUN pip install --upgrade pip
-RUN pip install --timeout=1000 streamlit requests
+
+# העתקת קובץ requirements.txt לפרונטאנד
+COPY ./requirements.txt /app/requirements.txt
+
+# התקנת כל התלויות, כולל streamlit-sortables
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
 
 # העתקת כל הקבצים הרלוונטיים
 COPY ./app.py /app/app.py

@@ -5,12 +5,21 @@ from datetime import datetime
 from sqlalchemy.sql import extract
 
 def get_movies(db: Session):
+    """
+    Retrieve all movies from the database.
+    """
     return db.query(models.Movie).all()
 
 def get_movie_by_name(db: Session, movie_name: str):
+    """
+    Retrieve a specific movie by its name.
+    """
     return db.query(models.Movie).filter(models.Movie.title == movie_name).all()
 
 def create_movie(db: Session, movie: schemas.MovieCreate):
+    """
+    Create a new movie in the database.
+    """
     db_movie = models.Movie(**movie.dict())
     db.add(db_movie)
     db.commit()
@@ -18,12 +27,19 @@ def create_movie(db: Session, movie: schemas.MovieCreate):
     return db_movie
 
 def delete_movie_by_id(db: Session, movie_id: int):
+    """
+    Delete a movie by its ID and return the movie title.
+    """
     movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+    
     if not movie:
         return {"error": "Movie not found"}
+
+    movie_title = movie.title  # שמירת שם הסרט שנמחק
     db.delete(movie)
     db.commit()
-    return {"message": "Movie deleted successfully"}
+
+    return {"message": "Movie deleted successfully", "deleted_movie": movie_title}
 
 def get_employees(db: Session):
     return db.query(models.Employee).all()
