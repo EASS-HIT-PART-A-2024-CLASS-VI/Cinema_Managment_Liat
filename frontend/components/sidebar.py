@@ -12,10 +12,28 @@ def logout():
     st.session_state.menu = "Movies"
     st.experimental_rerun()
 
+def initialize_sidebar_state():
+    """Initialize all sidebar-related session state variables."""
+    if "menu" not in st.session_state:
+        st.session_state.menu = "Movies"
+    if "show_sorted_movies" not in st.session_state:
+        st.session_state.show_sorted_movies = False
+    if "show_sorted_employees" not in st.session_state:
+        st.session_state.show_sorted_employees = False
+    if "show_birthdays" not in st.session_state:
+        st.session_state.show_birthdays = False
+    if "manage_screenings" not in st.session_state:
+        st.session_state.manage_screenings = False
+    if "show_chatbot" not in st.session_state:
+        st.session_state.show_chatbot = False
+
 def sidebar():
     """
     Render the sidebar only if the user is authenticated.
     """
+    # Initialize state variables first
+    initialize_sidebar_state()
+
     if not st.session_state.authenticated:
         return  # לא מציג תפריט אם המשתמש לא מחובר
 
@@ -30,7 +48,7 @@ def sidebar():
     # Update menu selection
     current_menu = st.sidebar.selectbox("Menu", menu_options)
     st.session_state.menu = current_menu
-    
+
     # Reset manage_screenings when switching away from Branches
     if previous_menu == "Branches" and current_menu != "Branches":
         st.session_state.manage_screenings = False
@@ -39,6 +57,7 @@ def sidebar():
     if st.session_state.menu == "Movies":
         if st.sidebar.button("Show Sorted Movies 🎬"):
             st.session_state.show_sorted_movies = True
+            st.session_state.show_chatbot = False
         else:
             st.session_state.show_sorted_movies = False
 
@@ -46,17 +65,30 @@ def sidebar():
     if st.session_state.menu == "Employees":
         if st.sidebar.button("Sort Employees by Salary 💰"):
             st.session_state.show_sorted_employees = True
+            st.session_state.show_chatbot = False
         else:
             st.session_state.show_sorted_employees = False
 
         if st.sidebar.button("Birthdays 🎂"):
             st.session_state.show_birthdays = True
+            st.session_state.show_chatbot = False
         else:
             st.session_state.show_birthdays = False
 
     # כפתור לניהול לוח ההקרנות יופיע **רק** אם נמצאים בעמוד Branches
     if st.session_state.menu == "Branches":
-        # אם לוחצים עליו, נגדיר manage_screenings = True;
-        # אם לא לוחצים — לא נדרוס את הערך, כדי לא למחוק מצב קודם.
         if st.sidebar.button("Manage Screenings 📽️"):
             st.session_state.manage_screenings = True
+            st.session_state.show_chatbot = False
+
+    # Add separator before chatbot button
+    st.sidebar.markdown("---")
+    
+    # Global chatbot button that appears on all pages
+    if st.sidebar.button("Chat with Bot 💬", key="chat_button"):
+        st.session_state.show_chatbot = not st.session_state.show_chatbot
+        if st.session_state.show_chatbot:
+            st.session_state.show_sorted_movies = False
+            st.session_state.show_sorted_employees = False
+            st.session_state.show_birthdays = False
+            st.session_state.manage_screenings = False
