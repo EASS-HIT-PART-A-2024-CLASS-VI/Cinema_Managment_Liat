@@ -4,10 +4,22 @@ from sqlalchemy.sql import text
 from pydantic import BaseModel
 import bcrypt
 import crud, models, schemas, database
+import httpx
+from typing import List, Optional
+from httpx import AsyncClient
+from pydantic import BaseModel
+from typing import Optional
+import logging
 
 models.Base.metadata.create_all(bind=database.engine)
-
 app = FastAPI()
+logger = logging.getLogger(__name__)
+
+# Internal URL for LLM service (using Docker service name)
+LLM_SERVICE_URL = "http://llm_service:8001"  # Internal Docker network port
+
+# HTTP client for async requests
+llm_client = AsyncClient(base_url=LLM_SERVICE_URL)
 
 def get_db():
     db = database.SessionLocal()
@@ -19,6 +31,33 @@ def get_db():
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Cinema Management System!"}
+
+# LLM Service Integration
+# Simplified request models
+
+class LLMChatRequest(BaseModel):
+    prompt: str
+    context: Optional[str] = None
+
+@app.post("/api/llm/chat")
+async def forward_to_llm(request: LLMChatRequest):
+    """
+    Forward chat requests to LLM service
+    """
+    logger.info(f"Forwarding chat request to LLM service: {request.prompt}")
+    try:
+        response = await llm_client.post(
+            "/chat", 
+            json=request.dict()
+        )
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        logger.error(f"Error communicating with LLM service: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Failed to process LLM request"
+        )
 
 # Login endpoint
 class LoginRequest(BaseModel):
@@ -45,18 +84,15 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
 
     return {"message": f"Successfully logged in as {request.username}"}
 
-# Logout endpoint
 @app.post("/logout")
 def logout():
     return {"message": "Logged out successfully"}
 
 # Movies endpoints
-# 📌 שליפת רשימת הסרטים בתור dropdown
 @app.get("/movies/dropdown", response_model=list[str])
 def get_movie_titles(db: Session = Depends(get_db)):
     return [movie.title for movie in crud.get_movies(db)]
 
-# 📌 שליפת סרטים ממוינים לפי דירוג מבקרים
 @app.get("/movies/sorted", response_model=list[schemas.Movie])
 def get_sorted_movies(db: Session = Depends(get_db)):
     """
@@ -65,12 +101,10 @@ def get_sorted_movies(db: Session = Depends(get_db)):
     movies = db.query(models.Movie).order_by(models.Movie.critics_rating.desc()).all()
     return movies
 
-# 📌 שליפת כל הסרטים
 @app.get("/movies", response_model=list[schemas.Movie])
 def read_movies(db: Session = Depends(get_db)):
     return crud.get_movies(db)
 
-# 📌 שליפת סרט לפי ID
 @app.get("/movies/{movie_id}", response_model=schemas.Movie)
 def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
     """
@@ -81,7 +115,6 @@ def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
 
-# 📌 הוספת סרט חדש
 @app.post("/movies", response_model=schemas.Movie)
 def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
     """
@@ -89,7 +122,6 @@ def add_movie(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
     """
     return crud.create_movie(db, movie)
 
-# 📌 מחיקת סרט + החזרת שם הסרט שנמחק
 @app.delete("/movies/{movie_id}")
 def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     """
@@ -99,7 +131,7 @@ def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
 
-    movie_title = movie.title  # שמירת שם הסרט לפני המחיקה
+    movie_title = movie.title
     db.delete(movie)
     db.commit()
 
@@ -134,10 +166,8 @@ def get_employee_by_id(employee_id: str, db: Session = Depends(get_db)):
 
 @app.post("/employees", response_model=schemas.Employee)
 def add_employee(employee: schemas.EmployeeCreate, db: Session = Depends(get_db)):
-    # Add the employee to the employees table
     new_employee = crud.create_employee(db, employee)
 
-    # If the role is Manager, add their credentials to the permissions table
     if employee.role.lower() == "manager":
         existing_permission = db.query(models.Permission).filter(
             models.Permission.username == employee.first_name
@@ -186,3 +216,7 @@ def delete_branch(branch_id: int, db: Session = Depends(get_db)):
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await llm_client.aclose()

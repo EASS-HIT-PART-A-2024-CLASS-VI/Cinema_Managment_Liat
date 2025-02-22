@@ -14,6 +14,23 @@ services:
     networks:
       - app_default
 
+  llm_service:
+    build:
+      context: ./backend/llm_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    working_dir: /app
+    volumes:
+      - ./backend/llm_service/app:/app
+    env_file:
+      - .env  # Load environment variables from main project folder
+    depends_on:
+      - db
+      - backend
+    networks:
+      - app_default
+
   frontend:
     build:
       context: ./frontend
@@ -46,4 +63,3 @@ volumes:
 networks:
   app_default:
     driver: bridge
-

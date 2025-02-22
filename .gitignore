@@ -1,1 +1,6 @@
+.env
+.env:Zone.Identifier
+**/.env
+**/.env:Zone.Identifier
+*.pyc
 __pycache__/

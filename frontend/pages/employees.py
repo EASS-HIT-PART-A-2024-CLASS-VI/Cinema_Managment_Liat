@@ -45,6 +45,7 @@ def employees_page():
         </style>
     """, unsafe_allow_html=True)
 
+
     st.header("Employees Management")
     
     if st.session_state.get("show_birthdays", False):
