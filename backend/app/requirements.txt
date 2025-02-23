@@ -6,4 +6,5 @@ psycopg2-binary
 streamlit
 bcrypt
 httpx>=0.24.0
-
+pytest
+pytest-asyncio

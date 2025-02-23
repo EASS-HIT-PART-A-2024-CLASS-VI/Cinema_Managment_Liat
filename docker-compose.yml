@@ -9,6 +9,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend/app:/app
+      - ./tests:/app/tests
     depends_on:
       - db
     networks:
