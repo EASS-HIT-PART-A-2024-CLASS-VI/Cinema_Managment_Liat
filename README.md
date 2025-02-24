@@ -1,13 +1,12 @@
 # Welcome to Cinema Management System 📽️
-
-  A microservices-based cinema management system designed for efficient movie scheduling, employee management, and branch operations, with integrated AI-powered assistance.
-
   [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
   [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
   [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
   [![Gemini AI](https://img.shields.io/badge/Gemini-AI-blue?style=for-the-badge&logo=google&logoColor=white)](https://gemini.google.com/chat)
 </div>
 
+
+  A microservices-based cinema management system designed for efficient movie scheduling, employee management, and branch operations, with integrated AI-powered assistance.
 The **Cinema Management System** is a full-stack application designed to streamline movie scheduling, employee management, and branch operations. Featuring a modern Streamlit frontend, a FastAPI backend, and cutting-edge technologies like LLM integration, this system provides intelligent assistance for cinema operations. Dockerized for seamless deployment, the application is built on a microservices architecture to ensure scalability and flexibility
 
 ---
@@ -24,7 +23,6 @@ The **Cinema Management System** is a full-stack application designed to streaml
 
 <img src="frontend/assets/architecture_diagram.png" alt="Architecture Diagram" width="65%">
 
-## Project Structure
 ```plaintext
 .
 └── app
@@ -71,6 +69,19 @@ The **Cinema Management System** is a full-stack application designed to streaml
 
 ```
 ---
+
+## 🎥 Demo
+
+<a href="https://youtu.be/H_tabs6GUPk" target="_blank">
+  <img 
+    src="frontend/assets/video_cover.png" 
+    alt="Cinema Managment Demo" 
+    width="100%"
+  />
+</a>
+
+---
+
 ### Prerequisites
 - Docker and Docker Compose installed 🐳
 
