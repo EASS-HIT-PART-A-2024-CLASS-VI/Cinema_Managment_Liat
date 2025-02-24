@@ -71,9 +71,21 @@ The **Cinema Management System** is a full-stack application designed to streaml
 
 ```
 ---
-## 🛠️ Setting Up the Project
 ### Prerequisites
-- Docker and Docker Compose installed.
+- Docker and Docker Compose installed 🐳
+
+## 🛠️ Setting Up the Project
+To use the LLM-powered suggestions feature, you need to provide an API key for Google Gemini AI.
+1. Visit [Google AI Studio](https://aistudio.google.com/apikey) to obtain your API key.
+2. Create a `.env` file in the root directory (the folder that contains `backend/` and `frontend/`) and add the following line, replacing `<YOUR_API_KEY>` with your actual key:
+
+   ```bash
+   echo 'GOOGLE_API_KEY=<YOUR_API_KEY>' > .env
+   ```
+3. Ensure the .env file is not accidentally committed to version control by adding it to .gitignore.
+
+### 💻 Running 
+
 ### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/Cinema_Managment_Liat.git
@@ -83,27 +95,20 @@ cd Cinema_Managment_Liat
 ```bash
 docker compose up --build
 ```
-- The backend will be available at: [http://localhost:8000](http://localhost:8000)
-- The frontend will be available at: [http://localhost:8501](http://localhost:8501)
+- FastAPI backend: http://localhost:8000
+- Streamlit frontend: http://localhost:8501
+- PostgreSQL database connected via Docker network
 
-### Step 3: Use the Application
-- Open the application in your browser:
-  - Backend: [http://localhost:8000](http://localhost:8000)
-  - Frontend: [http://localhost:8501](http://localhost:8501)
 - **Login**:
   - Use the manager's first name as the username.
   - Default password: `Aa123456`.
-- Navigate through the menu to:
-  - **Manage Movies**: View, add, and delete movies.
-  - **Manage Employees**: View, add, and delete employees (A manager can't be deleted if he is connected to a branch).
-  - **Manage Branches**: View, add, and delete branches.
 
 ---
+## 📖 API Endpoints
+The FastAPI backend provides RESTful endpoints for managing the system:
 
-## Endpoints
-
-### Authentication
-- **POST /login**: Allows managers to log in by verifying their credentials.
+### 🔑 Authentication Endpoints
+- **`POST /login`** - Allows managers to log in by verifying their credentials.
   - Request Body:
     ```json
     {
@@ -111,32 +116,96 @@ docker compose up --build
       "password": "string"
     }
     ```
-  - Response: A success or failure message.
+- **`POST /logout`** - Log out a user from the system.
 
-### Movies Endpoints
-- **GET /movies/dropdown**: Fetches a list of movie titles for dropdown menus.
-- **GET /movies**: Retrieves all movies.
-- **GET /movies/{movie_id}**: Retrieves a specific movie by ID.
-- **POST /movies**: Adds a new movie to the database.
-  - Request Body: schemas.MovieCreate.
-- **DELETE /movies/{movie_id}**: Deletes a movie by ID.
+### 🎬 Movies Endpoints
+- **`GET /movies`** - Retrieve all movies
+- **`POST /movies`** - Add a new movie
+- **`DELETE /movies/{movie_id}`** - Delete a movie
+- **`GET /movies/sorted`** - Get movies sorted by critics' ratings
+- **`GET /movies/dropdown`** - Retrieve a list of movie titles
 
-### Employees Endpoints
-- **GET /employees**: Retrieves all employees.
-- **GET /employees/dropdown**: Fetches a list of employee names for dropdown menus.
-- **GET /employees/{employee_id}**: Retrieves a specific employee by ID.
-- **POST /employees**: Adds a new employee to the database. If the role is "Manager," credentials are added to the permissions table.
-  - Request Body: schemas.EmployeeCreate.
-- **DELETE /employees/{employee_id}**: Deletes an employee by ID.
+### 👥 Employees Endpoints
+- **`GET /employees`** - Retrieve all employees
+- **`POST /employees`** - Add a new employee
+- **`DELETE /employees/{employee_id}`** - Delete an employee
+- **`GET /employees/sorted`** - Get employees sorted by salary
+- **`GET /employees/birthdays`** - Retrieve employees with birthdays in the current month
+- **`GET /employees/dropdown`** - Retrieve a list of employee names
 
-### Branches Endpoints
-- **GET /branches**: Retrieves all branches.
-- **GET /branches/dropdown**: Fetches a list of branch names for dropdown menus.
-- **GET /branches/{branch_id}**: Retrieves a specific branch by ID.
-- **POST /branches**: Adds a new branch to the database.
-  - Request Body: schemas.BranchCreate.
-- **DELETE /branches/{branch_id}**: Deletes a branch by ID.
+### 🏢 Branches Endpoints
+- **`GET /branches`** - Retrieve all branches
+- **`POST /branches`** - Add a new branch
+- **`DELETE /branches/{branch_id}`** - Delete a branch
+- **`GET /branches/dropdown`** - Retrieve a list of branch names
 
----
+### 🎭 Schedule (Not an Endpoint)
+Each branch has a **screening schedule** that includes:
+- **Movie title**
+- **Hall number**
+- **Showtime**
+- **Duration**  
+Schedules are **stored per branch** and update when a movie is deleted.
+
+📌 **API Documentation**: Available at [`http://localhost:8000/docs`](http://localhost:8000/docs)
 
 
+## 🤖 LLM Microservice Features
+
+The **Cinema Management System** integrates **Google Gemini AI** to assist with various management tasks. The LLM provides **intelligent guidance** and **operational support** for the following features:
+
+### 🎬 **Movie Management**
+- Retrieve movie details, including **genre, director, duration, and ratings**.
+- Get **sorted movie lists** based on critics' ratings.
+- Guide users on how to **add or delete movies** in the system.
+
+### 👥 **Employee Management**
+- Retrieve a **list of all employees** with relevant details.
+- Provide guidance on **adding new employees** with necessary information.
+- Retrieve **employees sorted by salary**.
+- Retrieve a **list of employees with birthdays** in the current month.
+
+### 🏢 **Branch Management**
+- Retrieve **all cinema branch details**.
+- Guide users on how to **add or delete branches**.
+- Provide **customer service contact details** for each branch.
+
+### 🎭 **Screening Schedule Management**
+- Guide users on how to **assign movies to screening times** in different branches.
+- Prevent **scheduling conflicts** based on **movie duration and branch hours**.
+- Assist with **managing existing screenings** in the **Branch Management** section.
+
+### 📌 **System Navigation Assistance**
+- Provide **step-by-step guidance** on using the system, including:
+  - Switching between **Movies, Employees, and Branches** sections.
+  - Using the **sidebar for filtering and sorting options**.
+  - Accessing **employee birthday lists** via the **"Birthdays 🎂"** button.
+  - Managing **screenings** via the **"Manage Screenings 🎬"** button.
+
+### 🚫 **General System Restrictions**
+- **Only managers** can access the system.
+- Employees **cannot log in** or modify system data.
+
+📌 **The LLM ensures all responses are professional, accurate, and strictly related to cinema management.**
+
+ ## Port Configuration
+
+### Frontend
+- **Port:** 3000
+- **URL:** http://localhost:3000
+
+### Backend API
+- **Port:** 8000
+- **URL:** http://localhost:8000
+- **Swagger UI**: http://localhost:8000/docs
+
+
+### LLM Chatbot
+- **Port:** 8001
+- **URL:** http://localhost:8001
+- **Swagger UI**: http://localhost:8001/docs
+
+## 👨‍💻 Author
+
+- **Name:** Liat Simhayev 
+- **GitHub:** [liatsimhayev](https://github.com/liatsimhayev)
