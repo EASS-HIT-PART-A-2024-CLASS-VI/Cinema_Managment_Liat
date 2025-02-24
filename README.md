@@ -1,70 +1,103 @@
-# Welcome to Cinema Management System!
+# Welcome to Cinema Management System 📽️
 
-## Overview
-The **Cinema Management System** is a comprehensive platform designed to manage and streamline operations related to cinemas, including movies, employees, and branches. This system provides an easy-to-use interface and robust backend capabilities.
+  A microservices-based cinema management system designed for efficient movie scheduling, employee management, and branch operations, with integrated AI-powered assistance.
 
-The backend is powered by **FastAPI**, ensuring secure and efficient API services, while the frontend is built with **Streamlit** for a user-friendly experience.
----
-## Table of Contents
-1. [Technologies Used](#technologies-used)
-2. [Features](#features)
-3. [Project Structure](#project-structure)
-4. [Endpoints](#endpoints)
-5. [How to Run the Project](#how-to-run-the-project)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+  [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
+  [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+  [![Gemini AI](https://img.shields.io/badge/Gemini-AI-blue?style=for-the-badge&logo=google&logoColor=white)](https://gemini.google.com/chat)
+</div>
+
+The **Cinema Management System** is a full-stack application designed to streamline movie scheduling, employee management, and branch operations. Featuring a modern Streamlit frontend, a FastAPI backend, and cutting-edge technologies like LLM integration, this system provides intelligent assistance for cinema operations. Dockerized for seamless deployment, the application is built on a microservices architecture to ensure scalability and flexibility
 
 ---
-
-## Technologies Used
-- **Backend**: Python 3.9, FastAPI (running on WSL).
-- **Frontend**: Streamlit (running on WSL).
-- **Database**: PostgreSQL.
-- **Authentication**: bcrypt for password hashing.
-- **Containerization**: Docker and Docker Compose.
-
+## 🚀 Features
+- **Movie Scheduling:** Efficiently manage screening times across multiple branches.
+- **Employee Management:** Handle staff details, roles, and schedules seamlessly.
+- **Branch Operations:** Oversee branch opening hours, managers, and customer service contacts.
+- **LLM-Powered Assistance:** Get intelligent support for cinema operations with AI integration.
+- **Microservices Architecture:** Modular FastAPI backend ensures scalability and maintainability.
+- **Streamlit Frontend:** Intuitive and responsive UI for effortless management.
+- **Docker Support:** Seamless deployment using Docker Compose for a hassle-free setup.
 ---
+## 🗂️ Project Architecture
 
-## Features
-### Backend
-- **CRUD Operations**: Manage movies, employees, and branches.
-- **Login Functionality**: Managers can log in using their first name as a username.
-
-### Frontend
-- User-friendly Streamlit interface for:
-  - Viewing, adding, and deleting movies, employees, and branches.
-  - Secure manager login.
-
----
+<img src="frontend/assets/architecture_diagram.png" alt="Architecture Diagram" width="65%">
 
 ## Project Structure
 ```plaintext
 .
-├── README.md
-├── app.mp4
-├── backend
-│   ├── Dockerfile
-│   └── app
-│       ├── __pycache__
-│       │   ├── crud.cpython-39.pyc
-│       │   ├── database.cpython-39.pyc
-│       │   ├── main.cpython-39.pyc
-│       │   ├── models.cpython-39.pyc
-│       │   └── schemas.cpython-39.pyc
-│       ├── crud.py
-│       ├── database.py
-│       ├── main.py
-│       ├── models.py
-│       ├── requirements.txt
-│       └── schemas.py
-├── docker-compose.yml
-├── frontend
-│   ├── Dockerfile
-│   ├── background.png
-│   ├── branchesback.png
-│   ├── employeeback.png
-│   ├── frontend.py
-│   └── moviesback.png
-└── integration_test.py
+└── app
+    ├── README.md
+    ├── __init__.py
+    ├── backend
+    │   ├── Dockerfile
+    │   ├── app
+    │   │   ├── crud.py
+    │   │   ├── database.py
+    │   │   ├── main.py
+    │   │   ├── models.py
+    │   │   ├── schemas.py
+    │   │   ├── requirements.txt
+    │   │   ├── test_cinema.db
+    │   │   └── tests/
+    │   └── llm_service
+    │       ├── Dockerfile
+    │       ├── __init__.py
+    │       ├── app
+    │       │   ├── config/settings.py
+    │       │   ├── gemini.py
+    │       │   ├── main.py
+    │       │   ├── prompt.py
+    │       │   └── utils.py
+    │       └── requirements.txt
+    ├── docker-compose.yml
+    ├── frontend
+    │   ├── Dockerfile
+    │   ├── app.py
+    │   ├── assets/
+    │   ├── components/
+    │   │   ├── login.py
+    │   │   ├── sidebar.py
+    │   │   └── utils.py
+    │   ├── pages/
+    │   │   ├── branches.py
+    │   │   ├── employees.py
+    │   │   └── movies.py
+    │   ├── requirements.txt
+    │   ├── setup.py
+    │   └── tests/
+    └── tests/
+
 ```
+---
+## 🛠️ Setting Up the Project
+### Prerequisites
+- Docker and Docker Compose installed.
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/Cinema_Managment_Liat.git
+cd Cinema_Managment_Liat
+```
+### Step 2: Build and Run Containers
+```bash
+docker compose up --build
+```
+- The backend will be available at: [http://localhost:8000](http://localhost:8000)
+- The frontend will be available at: [http://localhost:8501](http://localhost:8501)
+
+### Step 3: Use the Application
+- Open the application in your browser:
+  - Backend: [http://localhost:8000](http://localhost:8000)
+  - Frontend: [http://localhost:8501](http://localhost:8501)
+- **Login**:
+  - Use the manager's first name as the username.
+  - Default password: `Aa123456`.
+- Navigate through the menu to:
+  - **Manage Movies**: View, add, and delete movies.
+  - **Manage Employees**: View, add, and delete employees (A manager can't be deleted if he is connected to a branch).
+  - **Manage Branches**: View, add, and delete branches.
+
 ---
 
 ## Endpoints
@@ -106,35 +139,4 @@ The backend is powered by **FastAPI**, ensuring secure and efficient API service
 
 ---
 
-## How to Run the Project
-
-### Prerequisites
-- Docker and Docker Compose installed.
-
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/Cinema_Managment_Liat.git
-cd Cinema_Managment_Liat
-```
-
-### Step 2: Build and Run Containers
-```bash
-docker compose up --build
-```
-- The backend will be available at: [http://localhost:8000](http://localhost:8000)
-- The frontend will be available at: [http://localhost:8501](http://localhost:8501)
-
-### Step 3: Use the Application
-- Open the application in your browser:
-  - Backend: [http://localhost:8000](http://localhost:8000)
-  - Frontend: [http://localhost:8501](http://localhost:8501)
-- **Login**:
-  - Use the manager's first name as the username.
-  - Default password: `Aa123456`.
-- Navigate through the menu to:
-  - **Manage Movies**: View, add, and delete movies.
-  - **Manage Employees**: View, add, and delete employees (A manager can't be deleted if he is connected to a branch).
-  - **Manage Branches**: View, add, and delete branches.
-
----
 
