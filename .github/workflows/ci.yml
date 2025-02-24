@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Debug directory structure
+      run: |
+        echo "Current directory: $(pwd)"
+        ls -la
+    
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -21,7 +26,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-mock
+        pip install pytest pytest-mock pytest-asyncio
         
         # Install frontend dependencies
         if [ -f frontend/requirements.txt ]; then pip install -r frontend/requirements.txt; fi
@@ -42,21 +47,11 @@ jobs:
         cd frontend
         pytest tests/ -v
     
-    - name: Run Backend Tests
+    - name: Run Backend Integration Tests
       run: |
-        cd backend/app
-        pytest tests/ -v
+        cd tests/backend
+        pytest -v
     
-    - name: Run Integration Tests
-      run: |
-        pytest tests/ -v
-    
-    # Removing Docker build step temporarily as it may require Docker setup
-    # - name: Build Docker images
-    #   run: |
-    #     cd app
-    #     docker-compose build
-      
     - name: Lint code
       run: |
         pip install flake8
