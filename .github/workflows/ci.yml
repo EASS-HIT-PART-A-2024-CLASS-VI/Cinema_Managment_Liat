@@ -24,32 +24,31 @@ jobs:
         pip install pytest pytest-mock
         
         # Install frontend dependencies
-        if [ -f app/frontend/requirements.txt ]; then pip install -r app/frontend/requirements.txt; fi
+        if [ -f frontend/requirements.txt ]; then pip install -r frontend/requirements.txt; fi
         
         # Install backend dependencies
-        if [ -f app/backend/app/requirements.txt ]; then pip install -r app/backend/app/requirements.txt; fi
+        if [ -f backend/app/requirements.txt ]; then pip install -r backend/app/requirements.txt; fi
         
         # Install LLM service dependencies
-        if [ -f app/backend/llm_service/requirements.txt ]; then pip install -r app/backend/llm_service/requirements.txt; fi
+        if [ -f backend/llm_service/requirements.txt ]; then pip install -r backend/llm_service/requirements.txt; fi
     
     - name: Install frontend package in development mode
       run: |
-        cd app/frontend
+        cd frontend
         pip install -e .
     
     - name: Run Frontend Tests
       run: |
-        cd app/frontend
+        cd frontend
         pytest tests/ -v
     
     - name: Run Backend Tests
       run: |
-        cd app/backend/app
+        cd backend/app
         pytest tests/ -v
     
     - name: Run Integration Tests
       run: |
-        cd app
         pytest tests/ -v
     
     # Removing Docker build step temporarily as it may require Docker setup
@@ -62,6 +61,6 @@ jobs:
       run: |
         pip install flake8
         # stop the build if there are Python syntax errors or undefined names
-        flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings
-        flake8 app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
