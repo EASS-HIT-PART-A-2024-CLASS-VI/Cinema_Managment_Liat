@@ -1,20 +1,24 @@
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# Get the absolute path of the project root
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+
+# Print Python path for debugging
+print("Python Path:")
+for path in sys.path:
+    print(path)
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
+
+# Modify import to use the full path from the project root
 from backend.app.main import app, get_db
 from backend.app.models import Base
-from datetime import datetime
-import random
-import string
-
 # Helper function for generating unique values
 def generate_unique_value(length=9, char_set=None):
     """
