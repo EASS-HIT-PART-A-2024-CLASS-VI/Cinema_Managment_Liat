@@ -10,7 +10,7 @@ The **Cinema Management System** is a full-stack application designed to streaml
 
 ## 📋 Table of Contents
 - [Features](#-features)
-- [Project Architecture](#-project-architecture)
+- [Project Architecture](#️-project-architecture)
 - [Demo](#-demo)
 - [Prerequisites](#-prerequisites)
 - [Setting up the Project](#-setting-up-the-project)
