@@ -103,7 +103,7 @@ To enable **Google Gemini AI**, you must create an API key from [Google AI Studi
 
 Then, create a `.env` file in the root directory and fill it with:
 ```bash
-    GEMINI_API_KEY=<YOUR_API_KEY>'
+    GOOGLE_API_KEY=<YOUR_API_KEY>'
 ``` 
 
 Ensure `.env` is **excluded from version control** by adding it to `.gitignore`.
@@ -170,11 +170,8 @@ The FastAPI backend provides RESTful endpoints for managing the system:
   "password": "string"
 }
 ```
-
 #### **POST `/logout`** - Log out a user from the system.
-
 ---
-
 ### 🎮 Movies Endpoints
 
 - **GET** `/movies` - Retrieve all movies
@@ -182,9 +179,7 @@ The FastAPI backend provides RESTful endpoints for managing the system:
 - **DELETE** `/movies/{movie_id}` - Delete a movie
 - **GET** `/movies/sorted` - Get movies sorted by critics' ratings
 - **GET** `/movies/dropdown` - Retrieve a list of movie titles
-
 ---
-
 ### 👥 Employees Endpoints
 
 - **GET** `/employees` - Retrieve all employees
@@ -193,18 +188,14 @@ The FastAPI backend provides RESTful endpoints for managing the system:
 - **GET** `/employees/sorted` - Get employees sorted by salary
 - **GET** `/employees/birthdays` - Retrieve employees with birthdays in the current month
 - **GET** `/employees/dropdown` - Retrieve a list of employee names
-
 ---
-
 ### 🏢 Branches Endpoints
 
 - **GET** `/branches` - Retrieve all branches
 - **POST** `/branches` - Add a new branch
 - **DELETE** `/branches/{branch_id}` - Delete a branch
 - **GET** `/branches/dropdown` - Retrieve a list of branch names
-
 ---
-
 ### 🎭 Schedule (Not an Endpoint)
 Each branch has a screening schedule that includes:
 
@@ -218,46 +209,46 @@ Schedules are stored per branch and update when a movie is deleted.
 ---
 
 ## 🤖 LLM Microservice Features
-The Cinema Management System integrates Google Gemini AI to assist with various management tasks. The LLM provides intelligent guidance and operational support for the following features:
 
-### 🎮 Movie Management
-- Retrieve movie details, including genre, director, duration, and ratings.
-- Get sorted movie lists based on critics' ratings.
-- Guide users on how to add or delete movies in the system.
+The **Cinema Management System** integrates **Google Gemini AI** (model: gemini-1.5-pro) to provide intelligent assistance for cinema operations. The LLM offers **helpful guidance** and **operational instructions** through a dedicated microservice, enhancing the user experience with AI-powered support.
 
-### 👥 Employee Management
-- Retrieve a list of all employees with relevant details.
-- Provide guidance on adding new employees with necessary information.
-- Retrieve employees sorted by salary.
-- Retrieve a list of employees with birthdays in the current month.
+### 🎮 Movie Management Guidance
+- Explain how to add, view, and delete movies in the system
+- Provide guidance on sorting and filtering movie lists
+- Offer general information about movie management practices
 
-### 🏢 Branch Management
-- Retrieve all cinema branch details.
-- Guide users on how to add or delete branches.
-- Provide customer service contact details for each branch.
+### 👥 Employee Management Guidance
+- Guide users on how to add and remove employees
+- Explain the process for viewing employee information
+- Provide instructions for accessing birthday lists and sorted employee views
 
-### 🎭 Screening Schedule Management
-- Guide users on how to assign movies to screening times in different branches.
-- Prevent scheduling conflicts based on movie duration and branch hours.
-- Assist with managing existing screenings in the **Branch Management** section.
+### 🏢 Branch Management Guidance
+- Explain branch management functionality
+- Guide users on adding new branches and required information
+- Provide instructions for managing branch operations
+
+### 🎭 Screening Schedule Guidance
+- Explain the process of scheduling movies across branches
+- Provide best practices for managing screenings and avoiding conflicts
+- Offer instructions on maintaining and updating screening schedules
 
 ### 📌 System Navigation Assistance
-Provide step-by-step guidance on using the system, including:
-- Switching between **Movies, Employees, and Branches** sections.
-- Using the sidebar for filtering and sorting options.
-- Accessing employee birthday lists via the **"Birthdays 🎂"** button.
-- Managing screenings via the **"Manage Screenings 🎭"** button.
+- Help users navigate between different system sections
+- Explain UI elements and their functions
+- Provide troubleshooting steps for common issues
 
----
+### 🔧 Technical Implementation
+- Simple REST API endpoint at `/chat` for processing user questions
+- System prompt focused exclusively on cinema management topics
+- No direct database access - provides only general guidance
+- Environment variable configuration via `GOOGLE_API_KEY`
 
-## 🚫 General System Restrictions
-- **Only managers** can access the system.
-- Employees **cannot log in** or modify system data.
+### 🚫 Limitations
+- Cannot access real-time system data or perform operations
+- Provides only general guidance rather than specific data
+- Serves as a knowledge base rather than an action tool
 
-📌 **The LLM ensures all responses are professional, accurate, and strictly related to cinema management.**
-
----
-
+📌 **The LLM provides helpful instructions and explanations about system functionality without accessing or modifying actual data.**
 ## 🛠️ Port Configuration
 
 ### **Frontend**
@@ -276,20 +267,18 @@ Provide step-by-step guidance on using the system, including:
 
 ---
 
-## 🥾 Testing
+## 🧪 Testing
 
 ### **Backend Tests**
 Run tests from the project root:
 
-```bash
-# Run all tests
-pytest tests/
+# Run all backend tests inside the Docker container
 
-# Run specific test files
-pytest tests/test_routes.py
+```bash
+docker-compose exec backend bash -c "PYTHONPATH=/app pytest"
 ```
 
-#### The backend tests cover:
+The backend tests cover:
 - API endpoints functionality
 - CRUD operations
 - Authentication
@@ -297,29 +286,31 @@ pytest tests/test_routes.py
 - Error handling
 
 ### **Frontend Tests**
+
 Run tests from the frontend directory:
 
 ```bash
-cd frontend
-pytest tests/
+docker-compose exec frontend bash -c "cd /app && pytest tests/"
 ```
 
-#### Frontend tests validate:
+Frontend tests validate:
 - Component rendering
 - Page navigation
 - User interactions
 - API integration
 
-### **Integration Tests**
-Test the entire system including all services:
+### **Running Tests During Development**
+For local testing during development:
 
 ```bash
-# From project root
-pytest -m integration
+# Navigate to the app directory
+cd app
+
+# Run backend tests
+docker-compose exec backend bash -c "PYTHONPATH=/app pytest"
 ```
-
+These testing commands ensure all tests run in the appropriate Docker environment with the correct paths and dependencies.
 ---
-
 ## 👨‍💻 Author
 
 - **Name:** Liat Simhayev
