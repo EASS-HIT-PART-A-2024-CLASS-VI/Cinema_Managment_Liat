@@ -212,46 +212,50 @@ Schedules are stored per branch and update when a movie is deleted.
 
 The Streamlit frontend provides an intuitive interface for managing all cinema operations:
 
-### **Authentication**
+### 🔑 Authentication
 - Secure manager login with password protection
 - Dynamic session management for secure access
 - Role-based access control (RBAC) limited to managers
 
-### **Movie Management**
+### 🎬 Movie Management
 - Browse complete movie inventory with detailed information
 - Add new movies with comprehensive metadata
 - Sort movies by critics' ratings for quality assessment
 - Delete outdated movies with automatic schedule cleanup
 
-### **Employee Management**
+### 👥 Employee Management
 - View employee directory with comprehensive details
 - Add new staff members with role-specific configurations
 - Track employee birthdays with automatic monthly highlights
 - Sort employees by salary for payroll management
 
-### **Branch Management**
+### 🏢 Branch Management
 - Track all cinema locations with operational details
 - Register new branches with manager assignment
 - Configure branch operating hours and contact information
 - Manage branch-specific screening schedules
 
-### **Schedule Management**
+### 🎭 Schedule Management
 - Interactive screening scheduler with visual timetables
 - Conflict detection to prevent scheduling overlaps
 - Hall-specific program management across multiple days
 - Automatic cleanup when movies are removed from system
 
-### **AI Assistant**
+### 🤖 AI Assistant
 - Built-in chatbot powered by Google Gemini AI
 - Get assistance with system navigation and operations
 - Access contextual help for specific management tasks
 - Receive guidance on best practices for cinema management
 
-### **User Experience**
+### 🎨 User Experience
 - Dynamic theming with custom backgrounds for each section
 - Responsive layout that adapts to different screen sizes
 - Intuitive navigation through sidebar menu system
 - Consistent styling with clear visual hierarchy
+
+## 🚫 General System Restrictions
+- **Only managers** can access the system.
+- Employees **cannot log in** or modify system data.
 
 ---
 
@@ -289,11 +293,6 @@ The **Cinema Management System** integrates **Google Gemini AI** (model: gemini-
 - System prompt focused exclusively on cinema management topics
 - No direct database access - provides only general guidance
 - Environment variable configuration via `GOOGLE_API_KEY`
-
-### 🚫 Limitations
-- Cannot access real-time system data or perform operations
-- Provides only general guidance rather than specific data
-- Serves as a knowledge base rather than an action tool
 
 📌 **The LLM provides helpful instructions and explanations about system functionality without accessing or modifying actual data.**
 ## 🛠️ Port Configuration
