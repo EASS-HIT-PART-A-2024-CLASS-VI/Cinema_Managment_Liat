@@ -17,6 +17,7 @@ The **Cinema Management System** is a full-stack application designed to streaml
 - [Docker Deployment](#-docker-deployment)
 - [First-Time Setup](#-first-time-setup)
 - [API Endpoints](#-api-endpoints)
+- [Frontend](#️-frontend)
 - [LLM Microservice Features](#-llm-microservice-features)
 - [Port Configuration](#-port-configuration)
 - [Testing](#-testing)
@@ -205,6 +206,52 @@ Each branch has a screening schedule that includes:
 - Duration
 
 Schedules are stored per branch and update when a movie is deleted.
+
+---
+## 🖥️ Frontend
+
+The Streamlit frontend provides an intuitive interface for managing all cinema operations:
+
+### **Authentication**
+- Secure manager login with password protection
+- Dynamic session management for secure access
+- Role-based access control (RBAC) limited to managers
+
+### **Movie Management**
+- Browse complete movie inventory with detailed information
+- Add new movies with comprehensive metadata
+- Sort movies by critics' ratings for quality assessment
+- Delete outdated movies with automatic schedule cleanup
+
+### **Employee Management**
+- View employee directory with comprehensive details
+- Add new staff members with role-specific configurations
+- Track employee birthdays with automatic monthly highlights
+- Sort employees by salary for payroll management
+
+### **Branch Management**
+- Track all cinema locations with operational details
+- Register new branches with manager assignment
+- Configure branch operating hours and contact information
+- Manage branch-specific screening schedules
+
+### **Schedule Management**
+- Interactive screening scheduler with visual timetables
+- Conflict detection to prevent scheduling overlaps
+- Hall-specific program management across multiple days
+- Automatic cleanup when movies are removed from system
+
+### **AI Assistant**
+- Built-in chatbot powered by Google Gemini AI
+- Get assistance with system navigation and operations
+- Access contextual help for specific management tasks
+- Receive guidance on best practices for cinema management
+
+### **User Experience**
+- Dynamic theming with custom backgrounds for each section
+- Responsive layout that adapts to different screen sizes
+- Intuitive navigation through sidebar menu system
+- Consistent styling with clear visual hierarchy
 
 ---
 
